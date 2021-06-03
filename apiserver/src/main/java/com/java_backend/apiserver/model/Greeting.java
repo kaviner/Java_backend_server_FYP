@@ -1,4 +1,4 @@
-package com.java_backend_fyp.apiserver.model;
+package com.java_backend.apiserver.model;
 
 public class Greeting {
 

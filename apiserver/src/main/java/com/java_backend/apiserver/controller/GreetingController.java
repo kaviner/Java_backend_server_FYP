@@ -1,7 +1,7 @@
-package com.java_backend_fyp.apiserver.controller;
+package com.java_backend.apiserver.controller;
 
 import java.util.concurrent.atomic.AtomicLong;
-import com.java_backend_fyp.apiserver.model.Greeting;
+import com.java_backend.apiserver.model.Greeting;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;

@@ -15,12 +15,11 @@ import org.springframework.data.mongodb.config.AbstractMongoClientConfiguration;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
 @Configuration
-public class MongoConfig extends AbstractMongoClientConfiguration   {
+public class MongoConfig {
     public MongoDBConnectionInfo connectonInfo;
-
     public void loadMongoConfig(){
         try {
-            File configFile = new File("src\\main\\java\\com\\java_backend\\apiserver\\config\\mongodb_config\\MongoDBConfig.yaml");
+            File configFile = new File("src\\main\\resources\\static\\MongoDBConfig.yaml");
             ObjectMapper om = new ObjectMapper(new YAMLFactory());
             om.enable(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT);
             this.connectonInfo = om.readValue(configFile,MongoDBConnectionInfo.class);
@@ -30,7 +29,7 @@ public class MongoConfig extends AbstractMongoClientConfiguration   {
     }
 
     @Bean
-    public MongoClient mongo() {
+    public MongoClient mongoClient() {
         try{
             loadMongoConfig();
             ConnectionString connectionString = new ConnectionString(this.connectonInfo.getConnectionString());
@@ -49,11 +48,11 @@ public class MongoConfig extends AbstractMongoClientConfiguration   {
     @Bean
     public MongoTemplate mongoTemplate() throws Exception {
         System.out.println(connectonInfo.getDatabaseName());
-        return new MongoTemplate(mongo(), connectonInfo.getDatabaseName());
+        return new MongoTemplate(mongoClient(), connectonInfo.getDatabaseName());
     }
 
-    @Override
-    protected String getDatabaseName() {
+    @Bean
+    public String getDatabaseName() {
         return this.connectonInfo.getDatabaseName();
     }
 }

@@ -1,41 +1,59 @@
 package com.java_backend.apiserver.model;
 
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
-import org.bson.types.ObjectId;
 
 public class Schedule {
 
-    private ObjectId _id;
+    private String _id;
+    private String ownerInUserCollection;
+    private String activityIdInActivityCollection;
     private Date startDateTime;
     private Date endDateTime;
     private boolean isAlert;
-    private HashMap<String, Integer> alertValue = new HashMap<String, Integer>();
-    private ObjectId activityIdInActivityCollection;
+    private List<Map<String,Integer>> alertValue = new ArrayList<Map<String,Integer>>();
     private String status;
-
-
+    
     public Schedule() {
     }
 
-    public Schedule(ObjectId _id, Date startDateTime, Date endDateTime, boolean isAlert, HashMap<String,Integer> alertValue, ObjectId activityIdInActivityCollection, String status) {
+    public Schedule(String _id, String ownerInUserCollection, String activityIdInActivityCollection, Date startDateTime, Date endDateTime, boolean isAlert, List<Map<String,Integer>> alertValue, String status) {
         this._id = _id;
+        this.ownerInUserCollection = ownerInUserCollection;
+        this.activityIdInActivityCollection = activityIdInActivityCollection;
         this.startDateTime = startDateTime;
         this.endDateTime = endDateTime;
         this.isAlert = isAlert;
         this.alertValue = alertValue;
-        this.activityIdInActivityCollection = activityIdInActivityCollection;
         this.status = status;
     }
 
-    public ObjectId get_id() {
+    public String get_id() {
         return this._id;
     }
 
-    public void set_id(ObjectId _id) {
+    public void set_id(String _id) {
         this._id = _id;
+    }
+
+    public String getOwnerInUserCollection() {
+        return this.ownerInUserCollection;
+    }
+
+    public void setOwnerInUserCollection(String ownerInUserCollection) {
+        this.ownerInUserCollection = ownerInUserCollection;
+    }
+
+    public String getActivityIdInActivityCollection() {
+        return this.activityIdInActivityCollection;
+    }
+
+    public void setActivityIdInActivityCollection(String activityIdInActivityCollection) {
+        this.activityIdInActivityCollection = activityIdInActivityCollection;
     }
 
     public Date getStartDateTime() {
@@ -66,20 +84,12 @@ public class Schedule {
         this.isAlert = isAlert;
     }
 
-    public HashMap<String,Integer> getAlertValue() {
+    public List<Map<String,Integer>> getAlertValue() {
         return this.alertValue;
     }
 
-    public void setAlertValue(HashMap<String,Integer> alertValue) {
+    public void setAlertValue(List<Map<String,Integer>> alertValue) {
         this.alertValue = alertValue;
-    }
-
-    public ObjectId getActivityIdInActivityCollection() {
-        return this.activityIdInActivityCollection;
-    }
-
-    public void setActivityIdInActivityCollection(ObjectId activityIdInActivityCollection) {
-        this.activityIdInActivityCollection = activityIdInActivityCollection;
     }
 
     public String getStatus() {
@@ -90,8 +100,18 @@ public class Schedule {
         this.status = status;
     }
 
-    public Schedule _id(ObjectId _id) {
+    public Schedule _id(String _id) {
         set_id(_id);
+        return this;
+    }
+
+    public Schedule ownerInUserCollection(String ownerInUserCollection) {
+        setOwnerInUserCollection(ownerInUserCollection);
+        return this;
+    }
+
+    public Schedule activityIdInActivityCollection(String activityIdInActivityCollection) {
+        setActivityIdInActivityCollection(activityIdInActivityCollection);
         return this;
     }
 
@@ -110,13 +130,8 @@ public class Schedule {
         return this;
     }
 
-    public Schedule alertValue(HashMap<String,Integer> alertValue) {
+    public Schedule alertValue(List<Map<String,Integer>> alertValue) {
         setAlertValue(alertValue);
-        return this;
-    }
-
-    public Schedule activityIdInActivityCollection(ObjectId activityIdInActivityCollection) {
-        setActivityIdInActivityCollection(activityIdInActivityCollection);
         return this;
     }
 
@@ -133,26 +148,28 @@ public class Schedule {
             return false;
         }
         Schedule schedule = (Schedule) o;
-        return Objects.equals(_id, schedule._id) && Objects.equals(startDateTime, schedule.startDateTime) && Objects.equals(endDateTime, schedule.endDateTime) && isAlert == schedule.isAlert && Objects.equals(alertValue, schedule.alertValue) && Objects.equals(activityIdInActivityCollection, schedule.activityIdInActivityCollection) && Objects.equals(status, schedule.status);
+        return Objects.equals(_id, schedule._id) && Objects.equals(ownerInUserCollection, schedule.ownerInUserCollection) && Objects.equals(activityIdInActivityCollection, schedule.activityIdInActivityCollection) && Objects.equals(startDateTime, schedule.startDateTime) && Objects.equals(endDateTime, schedule.endDateTime) && isAlert == schedule.isAlert && Objects.equals(alertValue, schedule.alertValue) && Objects.equals(status, schedule.status);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(_id, startDateTime, endDateTime, isAlert, alertValue, activityIdInActivityCollection, status);
+        return Objects.hash(_id, ownerInUserCollection, activityIdInActivityCollection, startDateTime, endDateTime, isAlert, alertValue, status);
     }
 
     @Override
     public String toString() {
         return "{" +
             " _id='" + get_id() + "'" +
+            ", ownerInUserCollection='" + getOwnerInUserCollection() + "'" +
+            ", activityIdInActivityCollection='" + getActivityIdInActivityCollection() + "'" +
             ", startDateTime='" + getStartDateTime() + "'" +
             ", endDateTime='" + getEndDateTime() + "'" +
             ", isAlert='" + isIsAlert() + "'" +
             ", alertValue='" + getAlertValue() + "'" +
-            ", activityIdInActivityCollection='" + getActivityIdInActivityCollection() + "'" +
             ", status='" + getStatus() + "'" +
             "}";
     }
 
+    
 
 }

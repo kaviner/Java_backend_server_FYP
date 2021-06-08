@@ -11,7 +11,6 @@ import com.mongodb.client.MongoClients;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.mongodb.config.AbstractMongoClientConfiguration;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
 @Configuration
@@ -52,7 +51,7 @@ public class MongoConfig {
     }
 
     @Bean
-    public String getDatabaseName() {
+    public String databaseName() {
         return this.connectonInfo.getDatabaseName();
     }
 }

@@ -1,0 +1,120 @@
+{
+	"info": {
+		"_postman_id": "866e8f28-ca99-4c3f-acd9-7d2ca9dcddc9",
+		"name": "spring_backend_collection",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Schedule",
+			"item": [
+				{
+					"name": "addSchedule",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"startDateTime\":\"2021-03-16T08:27:08.000Z\",\r\n    \"endDateTime\": \"2021-03-16T08:27:08.000Z\",\r\n    \"option\": {\r\n        \"isAlert\": true,\r\n        \"alertValue\": [{\r\n            \"BPM\": 140\r\n        }, {\r\n            \"stressValue\": 7\r\n        }, {\r\n            \"fatigueValue\": 7\r\n        }]\r\n    },\r\n    \"status\": \"scheduled\",\r\n    \"activityId\": {\r\n        \"$oid\": \"60599a107194bc0568afdec8\"\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/addSchedule",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"addSchedule"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getScheduleInfoForOwner",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": null
+					},
+					"response": []
+				},
+				{
+					"name": "deleteSchedule",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": null
+					},
+					"response": []
+				},
+				{
+					"name": "updateSchedule",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": null
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "MonitoringRealtionship",
+			"item": [
+				{
+					"name": "addMonitoringRelationship",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": null
+					},
+					"response": []
+				},
+				{
+					"name": "getMonitoringRelationshipForHost",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": null
+					},
+					"response": []
+				},
+				{
+					"name": "getMonitoringRelationshipForTarget",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": null
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "greeting",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/greeting",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"greeting"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

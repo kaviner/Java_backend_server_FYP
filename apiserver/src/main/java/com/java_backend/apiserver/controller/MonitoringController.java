@@ -1,28 +1,30 @@
 package com.java_backend.apiserver.controller;
 
-import com.java_backend.apiserver.model.MonitoringRelationship;
+import com.java_backend.apiserver.model.MonitoringRelationship_1To1;
+import com.java_backend.apiserver.mongo_operation.MonitoringRelationshipService;
 import com.java_backend.apiserver.util.RequestVerifyUtil;
 
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
+@RestController
 public class MonitoringController {
     @PostMapping(
         value = "/addMonitoringRelationship", consumes = "application/json", produces = "text/plain")
-      public String addSchedule(@RequestBody MonitoringRelationship monitoringRelationship) {
+      public String addMonitoringRelationship(@RequestBody MonitoringRelationship_1To1 monitoringRelationship) {
           RequestVerifyUtil.printRequestBody("/addMonitoringRelationship",monitoringRelationship.toString());
-          MonitoringRelationship monitoringRelationshipManager = new MonitoringRelationship();
-          String result=monitoringRelationshipManager.addMonitoringRelationship();
+          MonitoringRelationshipService monitoringRelationshipManager = new MonitoringRelationshipService();
+          String result=monitoringRelationshipManager.addMonitoringRelationship(monitoringRelationship);
           return result;
       }
       
       @PostMapping(
         value = "/getMonitoringRelationshipForHost", consumes = "text/plain", produces = "application/json")
-      public String getScheduleInfoForOwner(@RequestBody String hostUserId) {
-          RequestVerifyUtil.printRequestBody("/getMonitoringRelationshipForHost",hostId);
-          MonitoringRelationship monitoringRelationshipManager = new MonitoringRelationship();
-          String result=monitoringRelationshipManager.getMonitoringRelationshipForHost(hostId);
+      public String getMonitoringRelationshipForHost(@RequestBody String hostUserId) {
+          RequestVerifyUtil.printRequestBody("/getMonitoringRelationshipForHost",hostUserId);
+          MonitoringRelationshipService monitoringRelationshipManager = new MonitoringRelationshipService();
+          String result=monitoringRelationshipManager.getMonitoringRelationshipForHost(hostUserId);
           return result;
       }
 
@@ -30,26 +32,26 @@ public class MonitoringController {
         value = "/getMonitoringRelationshipForTarget", consumes = "text/plain", produces = "application/json")
       public String getMonitoringRelationshipForTarget(@RequestBody String targetUserId) {
           RequestVerifyUtil.printRequestBody("/getMonitoringRelationshipForTarget",targetUserId);
-          MonitoringRelationship scheudleManager = new MonitoringRelationship();
+          MonitoringRelationshipService scheudleManager = new MonitoringRelationshipService();
           String result=scheudleManager.getMonitoringRelationshipForTarget(targetUserId);
           return result;
       }
       
-      @DeleteMapping(
-        value = "/hostDeleteMonitoringRelationshipTarget", consumes = "text/plain", produces = "application/json")
-      public String hostDeleteMonitoringRelationshipTarget(@RequestBody MonitoringRelationship relationship) {
-          RequestVerifyUtil.printRequestBody("/hostDeleteMonitoringRelationshipTarget",relationship.toString());
-          MonitoringRelationship scheudleManager = new MonitoringRelationship();
-          String result=scheudleManager.hostDeleteMonitoringRelationshipTarget(relationship);
-          return result;
-      }
+      // @DeleteMapping(
+      //   value = "/hostDeleteMonitoringRelationshipTarget", consumes = "text/plain", produces = "application/json")
+      // public String hostDeleteMonitoringRelationshipTarget(@RequestBody MonitoringRelationship relationship) {
+      //     RequestVerifyUtil.printRequestBody("/hostDeleteMonitoringRelationshipTarget",relationship.toString());
+      //     MonitoringRelationship scheudleManager = new MonitoringRelationship();
+      //     String result=scheudleManager.hostDeleteMonitoringRelationshipTarget(relationship);
+      //     return result;
+      // }
       
-      @DeleteMapping(
-        value = "/targetDeleteMonitoringRelationshipFromHost", consumes = "text/plain", produces = "application/json")
-      public String targetDeleteMonitoringRelationshipFromHost(@RequestBody String hostUserId) {
-          RequestVerifyUtil.printRequestBody("/targetDeleteMonitoringRelationshipFromHost",hostUserId);
-          MonitoringRelationship scheudleManager = new MonitoringRelationship();
-          String result=scheudleManager.targetDeleteMonitoringRelationshipFromHost(hostUserId);
-          return result;
-      }
+      // @DeleteMapping(
+      //   value = "/targetDeleteMonitoringRelationshipFromHost", consumes = "text/plain", produces = "application/json")
+      // public String targetDeleteMonitoringRelationshipFromHost(@RequestBody String hostUserId) {
+      //     RequestVerifyUtil.printRequestBody("/targetDeleteMonitoringRelationshipFromHost",hostUserId);
+      //     MonitoringRelationship scheudleManager = new MonitoringRelationship();
+      //     String result=scheudleManager.targetDeleteMonitoringRelationshipFromHost(hostUserId);
+      //     return result;
+      // }
 }

@@ -54,3 +54,8 @@ public class MeasuredRecordService {
         db=mongoClient.getDatabase(databaseName);
         scheduleCollection = db.getCollection("MeasuredRecord");
     }
+
+    public String addMeasurRecord(MeasuredRecord measuredRecordService) {
+        return null;
+    }
+}

@@ -94,6 +94,15 @@
 						"url": null
 					},
 					"response": []
+				},
+				{
+					"name": "deleteMonitoringRelationshipByHostOrTarget",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": null
+					},
+					"response": []
 				}
 			]
 		},

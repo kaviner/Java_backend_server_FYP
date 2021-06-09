@@ -4,6 +4,7 @@ import com.java_backend.apiserver.model.MonitoringRelationship_1To1;
 import com.java_backend.apiserver.mongo_operation.MonitoringRelationshipService;
 import com.java_backend.apiserver.util.RequestVerifyUtil;
 
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -37,21 +38,12 @@ public class MonitoringController {
           return result;
       }
       
-      // @DeleteMapping(
-      //   value = "/hostDeleteMonitoringRelationshipTarget", consumes = "text/plain", produces = "application/json")
-      // public String hostDeleteMonitoringRelationshipTarget(@RequestBody MonitoringRelationship relationship) {
-      //     RequestVerifyUtil.printRequestBody("/hostDeleteMonitoringRelationshipTarget",relationship.toString());
-      //     MonitoringRelationship scheudleManager = new MonitoringRelationship();
-      //     String result=scheudleManager.hostDeleteMonitoringRelationshipTarget(relationship);
-      //     return result;
-      // }
-      
-      // @DeleteMapping(
-      //   value = "/targetDeleteMonitoringRelationshipFromHost", consumes = "text/plain", produces = "application/json")
-      // public String targetDeleteMonitoringRelationshipFromHost(@RequestBody String hostUserId) {
-      //     RequestVerifyUtil.printRequestBody("/targetDeleteMonitoringRelationshipFromHost",hostUserId);
-      //     MonitoringRelationship scheudleManager = new MonitoringRelationship();
-      //     String result=scheudleManager.targetDeleteMonitoringRelationshipFromHost(hostUserId);
-      //     return result;
-      // }
+      @DeleteMapping(
+        value = "/deleteMonitoringRelationshipByHostOrTarget", consumes = "application/json", produces = "text/plain")
+      public String deleteMonitoringRelationshipByHostOrTarget(@RequestBody MonitoringRelationship_1To1 relationship) {
+          RequestVerifyUtil.printRequestBody("/deleteMonitoringRelationshipByHostOrTarge",relationship.toString());
+          MonitoringRelationshipService scheudleManager = new MonitoringRelationshipService();
+          String result=scheudleManager.deleteMonitoringRelationshipByHostOrTarget(relationship);
+          return result;
+      }
 }

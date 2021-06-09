@@ -9,7 +9,12 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.result.UpdateResult;
+import com.mongodb.client.model.Aggregates;
 import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Projections;
+import com.mongodb.client.model.UnwindOptions;
+import com.mongodb.client.model.Updates;
+
 import static com.mongodb.client.model.Filters.*;
 
 import java.util.ArrayList;
@@ -17,6 +22,8 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import org.bson.BSON;
+import org.bson.BsonDocument;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
@@ -144,9 +151,20 @@ public class MonitoringRelationshipService {
 
         JSONArray results = new JSONArray();
         try {
-            MongoCursor<Document> cursor = monitoringRelationshipCollection.aggregate(Arrays.asList(
-                new Document("$unwind","$target_ID_List"),
-            ).iterator();
+            //monitoringRelationshipCollection.aggregate(pipeline);
+            List<String> projectionList = new ArrayList<String> ();
+            projectionList.add("_id");
+            projectionList.add("host_ID");
+            MongoCursor<Document> cursor = monitoringRelationshipCollection.aggregate(
+                Arrays.asList(
+                    Aggregates.match(eq("target_ID_List.targetID", targetUserId)),
+                    Aggregates.lookup("MonitoringRelationship", "target_ID_List.targetID", "_id", "parent"),
+                    Aggregates.unwind("$parent", new UnwindOptions().preserveNullAndEmptyArrays(true)),
+                    Aggregates.project(
+                        Projections.include(projectionList)
+                    )
+                )
+             ).iterator();
             while (cursor.hasNext()) {
                 Document document = cursor.next();
                 results.put(document.toJson());
@@ -159,11 +177,18 @@ public class MonitoringRelationshipService {
         return null;
     }
 
-    public String hostDeleteMonitoringRelationshipTarget(MonitoringRelationship_1To1 relationship) {
-        return null;
-    }
-
-    public String targetDeleteMonitoringRelationshipFromHost(String hostUserId) {
+    public String deleteMonitoringRelationshipByHostOrTarget(MonitoringRelationship_1To1 relationship) {
+        try{
+            Bson filter = and(
+                eq("host_ID", relationship.getHost_ID()) ,
+                elemMatch("target_ID_List", eq("targetID",relationship.getTargetID()))
+            );
+            monitoringRelationshipCollection.findOneAndUpdate(filter,Updates.pull("target_ID_List", eq("targetID",relationship.getTargetID())));
+            return String.format("Deleted monitoring relationship--> {\"host_ID\":\"%s\",\"target_ID\":\"%s\"}" ,relationship.getHost_ID(),relationship.getTargetID());
+        }catch(Exception ex){
+            ex.printStackTrace();
+            System.out.println(ex.getMessage());
+        }
         return null;
     }
 

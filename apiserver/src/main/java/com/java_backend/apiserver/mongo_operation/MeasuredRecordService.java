@@ -24,7 +24,7 @@ public class MeasuredRecordService {
     private MongoTemplate mongo;
     private String databaseName;
     private MongoDatabase db;
-    private MongoCollection<Document> scheduleCollection;
+    private MongoCollection<Document> measuredRecordCollection;
     private MongoClient mongoClient;
     private MongoTemplate mongoTemplate;
 
@@ -38,7 +38,7 @@ public class MeasuredRecordService {
         mongoTemplate = context.getBean(MongoTemplate.class);
         databaseName = context.getBean(String.class);
         db = mongoClient.getDatabase(databaseName);
-        scheduleCollection = db.getCollection("MeasuredRecord");
+        measuredRecordCollection = db.getCollection("MeasuredRecord");
     }
 
     public MeasuredRecordService(MeasuredRecord measuredRecord) {
@@ -52,7 +52,7 @@ public class MeasuredRecordService {
         mongoTemplate = context.getBean(MongoTemplate.class);
         databaseName = context.getBean(String.class);
         db=mongoClient.getDatabase(databaseName);
-        scheduleCollection = db.getCollection("MeasuredRecord");
+        measuredRecordCollection = db.getCollection("MeasuredRecord");
     }
 
     public String addMeasurRecord(MeasuredRecord measuredRecordService) {

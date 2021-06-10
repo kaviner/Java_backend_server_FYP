@@ -3,9 +3,12 @@ package com.java_backend.apiserver.model;
 import java.util.Date;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 public class MonitoringRelationship_1To1 {
     private String host_ID;
     private String targetID;
+    @JsonFormat(locale="zh", timezone="GMT+8", pattern="yyyy-MM-dd HH:mm:ss.SSS")
     private Date relationshipStartDate; 
     private String status;
     private String pairCode;

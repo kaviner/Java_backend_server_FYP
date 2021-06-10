@@ -6,13 +6,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 
 public class Schedule {
 
     private String _id;
     private String ownerInUserCollection;
     private String activityIdInActivityCollection;
+    @JsonFormat(locale="zh", timezone="GMT+8", pattern="yyyy-MM-dd HH:mm:ss.SSS")
     private Date startDateTime;
+    @JsonFormat(locale="zh", timezone="GMT+8", pattern="yyyy-MM-dd HH:mm:ss.SSS")
     private Date endDateTime;
     private boolean isAlert;
     private List<Map<String,Integer>> alertValue = new ArrayList<Map<String,Integer>>();

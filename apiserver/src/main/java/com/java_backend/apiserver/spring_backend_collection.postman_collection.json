@@ -107,23 +107,65 @@
 			]
 		},
 		{
-			"name": "greeting",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "http://localhost:8080/greeting",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"greeting"
-					]
+			"name": "MeasuredRecord",
+			"item": [
+				{
+					"name": "addMeasuredRecord",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"userID\": \"605995e57194bc0568afdec1\",\r\n    \"measureID\": \"6058bb78ba59f62decefbe3f_20210316T082708\",\r\n    \"deviceID\": \"1234\",\r\n    \"sensorID\": \"5678\",\r\n    \"activityID\": \"60599a397194bc0568afdeca\",\r\n    \"activityName\": \"sleep\",\r\n    \"category\": \"rest\",\r\n    \"startDateTime\": \"2021-05-09T08:27:08.000\",\r\n    \"endDateTime\": \"2021-05-09T12:27:08.000\",\r\n    \"avg_RRI_Value\": 854.5,\r\n    \"avg_StressLevel_Value\": 7,\r\n    \"avg_FatigueLevel_Value\": 5,\r\n    \"avg_BPM_Value\": 90,\r\n    \"avg_RRI_Label\": \"LOW\",\r\n    \"avg_StressLevel_Label\": \"HIGH\",\r\n    \"avg_FatigueLevel_Label\": \"HIGH\",\r\n    \"avg_BPM_Label\": \"HIGH\",\r\n    \"highest_RRI_Value\": 854.5,\r\n    \"highest_StressLevel_Value\": 9,\r\n    \"highest_FatigueLevel_Value\": 5,\r\n    \"highest_BPM_Value\": 90,\r\n    \"highest_RRI_Label\": \"HIGH\",\r\n    \"highest_StressLevel_Label\": \"HIGH\",\r\n    \"highest_FatigueLevel_Label\": \"HIGH\",\r\n    \"highest_BPM_Label\": \"HIGH\",\r\n    \"lowest_RRI_Value\": 854.5,\r\n    \"lowest_StressLevel_Value\": 5,\r\n    \"lowest_FatigueLevel_Value\": 5,\r\n    \"lowest_BPM_Value\": 90,\r\n    \"lowest_RRI_Label\": \"LOW\",\r\n    \"lowest_StressLevel_Label\": \"HIGH\",\r\n    \"lowest_FatigueLevel_Label\": \"MID\",\r\n    \"lowest_BPM_Label\": \"LOW\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/addMeasuredRecord",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"addMeasuredRecord"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getMeasuredRecordList",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"recordOwner\":\"605995e57194bc0568afdec1\",\r\n    \"sortByFieldName\":\"highest_BPM_Value\",\r\n    \"startDateTime\": \"2021-01-01T00:00:00.000\",\r\n    \"endDateTime\": \"2021-01-31T23:59:59.999\",\r\n    \"isAscending\":\"false\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/getMeasuredRecordListByOwner_FieldName",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"getMeasuredRecordListByOwner_FieldName"
+							]
+						}
+					},
+					"response": []
 				}
-			},
-			"response": []
+			]
 		}
 	]
 }

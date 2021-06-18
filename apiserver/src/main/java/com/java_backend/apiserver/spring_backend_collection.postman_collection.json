@@ -1,0 +1,171 @@
+{
+	"info": {
+		"_postman_id": "866e8f28-ca99-4c3f-acd9-7d2ca9dcddc9",
+		"name": "spring_backend_collection",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Schedule",
+			"item": [
+				{
+					"name": "addSchedule",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"startDateTime\":\"2021-03-16T08:27:08.000Z\",\r\n    \"endDateTime\": \"2021-03-16T08:27:08.000Z\",\r\n    \"option\": {\r\n        \"isAlert\": true,\r\n        \"alertValue\": [{\r\n            \"BPM\": 140\r\n        }, {\r\n            \"stressValue\": 7\r\n        }, {\r\n            \"fatigueValue\": 7\r\n        }]\r\n    },\r\n    \"status\": \"scheduled\",\r\n    \"activityId\": {\r\n        \"$oid\": \"60599a107194bc0568afdec8\"\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/addSchedule",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"addSchedule"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getScheduleInfoForOwner",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": null
+					},
+					"response": []
+				},
+				{
+					"name": "deleteSchedule",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": null
+					},
+					"response": []
+				},
+				{
+					"name": "updateSchedule",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": null
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "MonitoringRealtionship",
+			"item": [
+				{
+					"name": "addMonitoringRelationship",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": null
+					},
+					"response": []
+				},
+				{
+					"name": "getMonitoringRelationshipForHost",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": null
+					},
+					"response": []
+				},
+				{
+					"name": "getMonitoringRelationshipForTarget",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": null
+					},
+					"response": []
+				},
+				{
+					"name": "deleteMonitoringRelationshipByHostOrTarget",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": null
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "MeasuredRecord",
+			"item": [
+				{
+					"name": "addMeasuredRecord",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"userID\": \"605995e57194bc0568afdec1\",\r\n    \"measureID\": \"6058bb78ba59f62decefbe3f_20210316T082708\",\r\n    \"deviceID\": \"1234\",\r\n    \"sensorID\": \"5678\",\r\n    \"activityID\": \"60599a397194bc0568afdeca\",\r\n    \"activityName\": \"sleep\",\r\n    \"category\": \"rest\",\r\n    \"startDateTime\": \"2021-05-09T08:27:08.000\",\r\n    \"endDateTime\": \"2021-05-09T12:27:08.000\",\r\n    \"avg_RRI_Value\": 854.5,\r\n    \"avg_StressLevel_Value\": 7,\r\n    \"avg_FatigueLevel_Value\": 5,\r\n    \"avg_BPM_Value\": 90,\r\n    \"avg_RRI_Label\": \"LOW\",\r\n    \"avg_StressLevel_Label\": \"HIGH\",\r\n    \"avg_FatigueLevel_Label\": \"HIGH\",\r\n    \"avg_BPM_Label\": \"HIGH\",\r\n    \"highest_RRI_Value\": 854.5,\r\n    \"highest_StressLevel_Value\": 9,\r\n    \"highest_FatigueLevel_Value\": 5,\r\n    \"highest_BPM_Value\": 90,\r\n    \"highest_RRI_Label\": \"HIGH\",\r\n    \"highest_StressLevel_Label\": \"HIGH\",\r\n    \"highest_FatigueLevel_Label\": \"HIGH\",\r\n    \"highest_BPM_Label\": \"HIGH\",\r\n    \"lowest_RRI_Value\": 854.5,\r\n    \"lowest_StressLevel_Value\": 5,\r\n    \"lowest_FatigueLevel_Value\": 5,\r\n    \"lowest_BPM_Value\": 90,\r\n    \"lowest_RRI_Label\": \"LOW\",\r\n    \"lowest_StressLevel_Label\": \"HIGH\",\r\n    \"lowest_FatigueLevel_Label\": \"MID\",\r\n    \"lowest_BPM_Label\": \"LOW\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/addMeasuredRecord",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"addMeasuredRecord"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getMeasuredRecordList",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"recordOwner\":\"605995e57194bc0568afdec1\",\r\n    \"sortByFieldName\":\"highest_BPM_Value\",\r\n    \"startDateTime\": \"2021-01-01T00:00:00.000\",\r\n    \"endDateTime\": \"2021-01-31T23:59:59.999\",\r\n    \"isAscending\":\"false\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/getMeasuredRecordListByOwner_FieldName",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"getMeasuredRecordListByOwner_FieldName"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

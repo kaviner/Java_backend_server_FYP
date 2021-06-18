@@ -18,7 +18,7 @@ public class MongoConfig {
     public MongoDBConnectionInfo connectonInfo;
     public void loadMongoConfig(){
         try {
-            File configFile = new File("src\\main\\resources\\static\\MongoDBConfig.yaml");
+            File configFile = new File("MongoDBConfig.yaml");
             ObjectMapper om = new ObjectMapper(new YAMLFactory());
             om.enable(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT);
             this.connectonInfo = om.readValue(configFile,MongoDBConnectionInfo.class);

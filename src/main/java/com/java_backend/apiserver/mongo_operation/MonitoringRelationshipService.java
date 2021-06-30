@@ -22,7 +22,6 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import org.bson.BSON;
 import org.bson.BsonDocument;
 import org.bson.Document;
 import org.bson.conversions.Bson;

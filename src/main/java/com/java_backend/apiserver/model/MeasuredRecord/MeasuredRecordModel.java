@@ -54,16 +54,8 @@ public class MeasuredRecordModel {
     private String lowest_FatigueLevel_Label;  // The lowest fatigue level label 
     private String lowest_BPM_Label;           // The lowest bpm label
 
-    public MeasuredRecordModel(String userID, String measureID, String deviceID, String sensorID, String activityID, String activityName, String category, Date startDateTime, Date endDateTime) {
-        this.userID = userID;
-        this.measureID = measureID;
-        this.deviceID = deviceID;
-        this.sensorID = sensorID;
-        this.activityID = activityID;
-        this.activityName = activityName;
-        this.category = category;
-        this.startDateTime = startDateTime;
-        this.endDateTime = endDateTime;
+
+    public MeasuredRecordModel() {
     }
 
     public MeasuredRecordModel(ObjectId _id, String userID, String measureID, String deviceID, String sensorID, String activityID, String activityName, String category, Date startDateTime, Date endDateTime, double avg_RRI_Value, double avg_StressLevel_Value, double avg_FatigueLevel_Value, double avg_BPM_Value, String avg_RRI_Label, String avg_StressLevelLabel, String avg_FatigueLevel_Label, String avg_BPM_Label, double highest_RRI_Value, double highest_StressLevel_Value, double highest_FatigueLevel_Value, double highest_BPM_Value, String highest_RRI_Label, String highest_StressLevelLabel, String highest_FatigueLevel_Label, String highest_BPM_Label, double lowest_RRI_Value, double lowest_StressLevel_Value, double lowest_FatigueLevel_Value, double lowest_BPM_Value, String lowest_RRI_Label, String lowest_StressLevelLabel, String lowest_FatigueLevel_Label, String lowest_BPM_Label) {
@@ -166,7 +158,7 @@ public class MeasuredRecordModel {
     public void setCategory(String category) {
         this.category = category;
     }
-    @JsonFormat(shape = JsonFormat.Shape.STRING,pattern="yyyy-MM-dd'T'HH:mm:ss.SSS")
+
     public Date getStartDateTime() {
         return this.startDateTime;
     }
@@ -174,7 +166,7 @@ public class MeasuredRecordModel {
     public void setStartDateTime(Date startDateTime) {
         this.startDateTime = startDateTime;
     }
-    @JsonFormat(shape = JsonFormat.Shape.STRING,pattern="yyyy-MM-dd'T'HH:mm:ss.SSS")
+
     public Date getEndDateTime() {
         return this.endDateTime;
     }
@@ -600,6 +592,7 @@ public class MeasuredRecordModel {
             ", lowest_BPM_Label='" + getLowest_BPM_Label() + "'" +
             "}";
     }
+    
 
  
  

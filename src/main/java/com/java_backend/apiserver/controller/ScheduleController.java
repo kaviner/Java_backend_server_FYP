@@ -1,5 +1,9 @@
 package com.java_backend.apiserver.controller;
 
+import java.util.HashMap;
+
+import com.java_backend.apiserver.model.QueryModel;
+import com.java_backend.apiserver.model.QueryModelForSchedule;
 import com.java_backend.apiserver.model.Schedule;
 import com.java_backend.apiserver.mongo_operation.ScheduleService;
 import com.java_backend.apiserver.util.RequestVerifyUtil;
@@ -12,20 +16,20 @@ import org.springframework.web.bind.annotation.RestController;
 public class ScheduleController {
     
     @PostMapping(
-        value = "/addSchedule", consumes = "application/json", produces = "text/plain")
-      public String addSchedule(@RequestBody Schedule schedule) {
+        value = "/addSchedule", consumes = "application/json", produces = "application/json")
+      public HashMap<String,String> addSchedule(@RequestBody Schedule schedule) {
           RequestVerifyUtil.printRequestBody("/addSchedule",schedule.toString());
           ScheduleService scheudleManager = new ScheduleService(schedule);
-          String result=scheudleManager.addNewSchedule();
+          HashMap<String,String> result=scheudleManager.addNewSchedule();
           return result;
       }
       
       @PostMapping(
-        value = "/getScheduleInfoForOwner", consumes = "text/plain", produces = "application/json")
-      public String getScheduleInfoForOwner(@RequestBody String ownerId) {
-          RequestVerifyUtil.printRequestBody("/getScheduleInfoForOwner",ownerId);
+        value = "/getScheduleInfoForOwner", consumes = "application/json", produces = "application/json")
+      public String getScheduleInfoForOwner(@RequestBody QueryModelForSchedule qModule) {
+          RequestVerifyUtil.printRequestBody("/getScheduleInfoForOwner",qModule.toString());
           ScheduleService scheudleManager = new ScheduleService();
-          String result=scheudleManager.getScheduleInfoForOwner(ownerId);
+          String result=scheudleManager.getScheduleInfoForOwner(qModule);
           return result;
       }
 

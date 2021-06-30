@@ -1,7 +1,10 @@
 package com.java_backend.apiserver.controller;
 
+import java.util.HashMap;
+
 import com.java_backend.apiserver.model.MeasuredRecord.MeasuredRecordFilter;
 import com.java_backend.apiserver.model.MeasuredRecord.MeasuredRecordModel;
+import com.java_backend.apiserver.model.MeasuredRecord.PPG_SignalSet;
 import com.java_backend.apiserver.mongo_operation.MeasuredRecordService;
 import com.java_backend.apiserver.util.RequestVerifyUtil;
 
@@ -11,14 +14,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class MeasuredRecordController {
-    @PostMapping(value = "/addMeasuredRecord", consumes = "application/json", produces = "text/plain")
-    public String addMeasurRecord(@RequestBody MeasuredRecordModel measuredRecord) {
+    @PostMapping(value = "/addMeasuredRecord", consumes = "application/json", produces = "application/json")
+    public HashMap<String,String>  addMeasurRecord(@RequestBody MeasuredRecordModel measuredRecord) {
         RequestVerifyUtil.printRequestBody("/addMeasuredRecord", measuredRecord.toString());
         MeasuredRecordService measuredRecordService = new MeasuredRecordService();
-        String result = measuredRecordService.addMeasurRecord(measuredRecord);
+        HashMap<String,String>  result = measuredRecordService.addMeasurRecord(measuredRecord);
         return result;
     }
-
 
     @PostMapping(value = "/getMeasuredRecordListByOwner_FieldName", consumes = "application/json", produces = "application/json")
     public String getMeasuredRecordListByOwner_FieldName(@RequestBody MeasuredRecordFilter measuredRecordFilter) {
@@ -28,32 +30,14 @@ public class MeasuredRecordController {
         return result;
     }
 
+    @PostMapping(value = "/pushNewPPGSignalRecordTo_MeasuredRecord", consumes = "application/json", produces = "application/json")
+    public HashMap<String,String> pushNewPPGSignalRecordTo_MeasuredRecord(@RequestBody PPG_SignalSet signalSet) {
+        RequestVerifyUtil.printRequestBody("/pushNewPPGSignalRecordTo_MeasuredRecord",  String.valueOf(signalSet.getPpgSignalSet().size()));
+        MeasuredRecordService measuredRecordService = new MeasuredRecordService();
+        HashMap<String,String> result = measuredRecordService.pushNewPPGSignalRecordTo_MeasuredRecord(signalSet.getPpgSignalSet());
+        return result;
+    }
 
 
 
-    // @PostMapping(
-    // value = "/getMonitoringRelationshipForTarget", consumes = "text/plain",
-    // produces = "application/json")
-    // public String getMonitoringRelationshipForTarget(@RequestBody String
-    // targetUserId) {
-    // RequestVerifyUtil.printRequestBody("/getMonitoringRelationshipForTarget",targetUserId);
-    // MonitoringRelationshipService scheudleManager = new
-    // MonitoringRelationshipService();
-    // String
-    // result=scheudleManager.getMonitoringRelationshipForTarget(targetUserId);
-    // return result;
-    // }
-
-    // @DeleteMapping(
-    // value = "/deleteMonitoringRelationshipByHostOrTarget", consumes =
-    // "application/json", produces = "text/plain")
-    // public String deleteMonitoringRelationshipByHostOrTarget(@RequestBody
-    // MonitoringRelationship_1To1 relationship) {
-    // RequestVerifyUtil.printRequestBody("/deleteMonitoringRelationshipByHostOrTarge",relationship.toString());
-    // MonitoringRelationshipService scheudleManager = new
-    // MonitoringRelationshipService();
-    // String
-    // result=scheudleManager.deleteMonitoringRelationshipByHostOrTarget(relationship);
-    // return result;
-    // }
 }

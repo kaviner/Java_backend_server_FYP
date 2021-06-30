@@ -1,9 +1,6 @@
 package com.java_backend.apiserver.model;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -14,25 +11,26 @@ public class Schedule {
     private String _id;
     private String ownerInUserCollection;
     private String activityIdInActivityCollection;
+    private String activityName;
+    private String category;
     @JsonFormat(locale="zh", timezone="GMT+8", pattern="yyyy-MM-dd HH:mm:ss.SSS")
     private Date startDateTime;
     @JsonFormat(locale="zh", timezone="GMT+8", pattern="yyyy-MM-dd HH:mm:ss.SSS")
     private Date endDateTime;
-    private boolean isAlert;
-    private List<Map<String,Integer>> alertValue = new ArrayList<Map<String,Integer>>();
     private String status;
     
+
     public Schedule() {
     }
 
-    public Schedule(String _id, String ownerInUserCollection, String activityIdInActivityCollection, Date startDateTime, Date endDateTime, boolean isAlert, List<Map<String,Integer>> alertValue, String status) {
+    public Schedule(String _id, String ownerInUserCollection, String activityIdInActivityCollection, String activityName, String category, Date startDateTime, Date endDateTime, String status) {
         this._id = _id;
         this.ownerInUserCollection = ownerInUserCollection;
         this.activityIdInActivityCollection = activityIdInActivityCollection;
+        this.activityName = activityName;
+        this.category = category;
         this.startDateTime = startDateTime;
         this.endDateTime = endDateTime;
-        this.isAlert = isAlert;
-        this.alertValue = alertValue;
         this.status = status;
     }
 
@@ -60,6 +58,22 @@ public class Schedule {
         this.activityIdInActivityCollection = activityIdInActivityCollection;
     }
 
+    public String getActivityName() {
+        return this.activityName;
+    }
+
+    public void setActivityName(String activityName) {
+        this.activityName = activityName;
+    }
+
+    public String getCategory() {
+        return this.category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
     public Date getStartDateTime() {
         return this.startDateTime;
     }
@@ -74,26 +88,6 @@ public class Schedule {
 
     public void setEndDateTime(Date endDateTime) {
         this.endDateTime = endDateTime;
-    }
-
-    public boolean isIsAlert() {
-        return this.isAlert;
-    }
-
-    public boolean getIsAlert() {
-        return this.isAlert;
-    }
-
-    public void setIsAlert(boolean isAlert) {
-        this.isAlert = isAlert;
-    }
-
-    public List<Map<String,Integer>> getAlertValue() {
-        return this.alertValue;
-    }
-
-    public void setAlertValue(List<Map<String,Integer>> alertValue) {
-        this.alertValue = alertValue;
     }
 
     public String getStatus() {
@@ -119,6 +113,16 @@ public class Schedule {
         return this;
     }
 
+    public Schedule activityName(String activityName) {
+        setActivityName(activityName);
+        return this;
+    }
+
+    public Schedule category(String category) {
+        setCategory(category);
+        return this;
+    }
+
     public Schedule startDateTime(Date startDateTime) {
         setStartDateTime(startDateTime);
         return this;
@@ -126,16 +130,6 @@ public class Schedule {
 
     public Schedule endDateTime(Date endDateTime) {
         setEndDateTime(endDateTime);
-        return this;
-    }
-
-    public Schedule isAlert(boolean isAlert) {
-        setIsAlert(isAlert);
-        return this;
-    }
-
-    public Schedule alertValue(List<Map<String,Integer>> alertValue) {
-        setAlertValue(alertValue);
         return this;
     }
 
@@ -152,12 +146,12 @@ public class Schedule {
             return false;
         }
         Schedule schedule = (Schedule) o;
-        return Objects.equals(_id, schedule._id) && Objects.equals(ownerInUserCollection, schedule.ownerInUserCollection) && Objects.equals(activityIdInActivityCollection, schedule.activityIdInActivityCollection) && Objects.equals(startDateTime, schedule.startDateTime) && Objects.equals(endDateTime, schedule.endDateTime) && isAlert == schedule.isAlert && Objects.equals(alertValue, schedule.alertValue) && Objects.equals(status, schedule.status);
+        return Objects.equals(_id, schedule._id) && Objects.equals(ownerInUserCollection, schedule.ownerInUserCollection) && Objects.equals(activityIdInActivityCollection, schedule.activityIdInActivityCollection) && Objects.equals(activityName, schedule.activityName) && Objects.equals(category, schedule.category) && Objects.equals(startDateTime, schedule.startDateTime) && Objects.equals(endDateTime, schedule.endDateTime) && Objects.equals(status, schedule.status);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(_id, ownerInUserCollection, activityIdInActivityCollection, startDateTime, endDateTime, isAlert, alertValue, status);
+        return Objects.hash(_id, ownerInUserCollection, activityIdInActivityCollection, activityName, category, startDateTime, endDateTime, status);
     }
 
     @Override
@@ -166,14 +160,16 @@ public class Schedule {
             " _id='" + get_id() + "'" +
             ", ownerInUserCollection='" + getOwnerInUserCollection() + "'" +
             ", activityIdInActivityCollection='" + getActivityIdInActivityCollection() + "'" +
+            ", activityName='" + getActivityName() + "'" +
+            ", category='" + getCategory() + "'" +
             ", startDateTime='" + getStartDateTime() + "'" +
             ", endDateTime='" + getEndDateTime() + "'" +
-            ", isAlert='" + isIsAlert() + "'" +
-            ", alertValue='" + getAlertValue() + "'" +
             ", status='" + getStatus() + "'" +
             "}";
     }
+   
 
+  
     
 
 }

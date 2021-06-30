@@ -2,22 +2,34 @@ package com.java_backend.apiserver.mongo_operation;
 
 import com.java_backend.apiserver.config.mongodb_config.MongoConfig;
 import com.java_backend.apiserver.model.MeasuredRecord.MeasuredRecordModel;
+import com.java_backend.apiserver.model.MeasuredRecord.PPG_Signal;
+import com.java_backend.apiserver.model.MeasuredRecord.PPG_SignalSet;
 import com.java_backend.apiserver.util.DateUtil;
 import com.java_backend.apiserver.model.MeasuredRecord.MeasuredRecordFilter;
 import com.mongodb.BasicDBObject;
+import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.PushOptions;
+import com.mongodb.client.model.Updates;
+import com.mongodb.client.result.UpdateResult;
+
 import static com.mongodb.client.model.Filters.*;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 
 import com.google.gson.Gson;
 
 import org.bson.Document;
+import org.bson.codecs.configuration.CodecRegistry;
+import org.bson.codecs.pojo.PojoCodecProvider;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 import org.json.JSONArray;
@@ -38,14 +50,16 @@ public class MeasuredRecordService {
     public MeasuredRecordService() {
         try {
             context = new AnnotationConfigApplicationContext(MongoConfig.class);
+            CodecRegistry pojoCodecRegistry = org.bson.codecs.configuration.CodecRegistries.fromRegistries(MongoClientSettings.getDefaultCodecRegistry(), org.bson.codecs.configuration.CodecRegistries.fromProviders(PojoCodecProvider.builder().automatic(true).build()));
+            mongoClient = context.getBean(MongoClient.class);
+            mongoTemplate = context.getBean(MongoTemplate.class);
+            databaseName = context.getBean(String.class);
+            db = mongoClient.getDatabase(databaseName).withCodecRegistry(pojoCodecRegistry);
+            measuredRecordCollection = db.getCollection("MeasuredRecord");
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-        mongoClient = context.getBean(MongoClient.class);
-        mongoTemplate = context.getBean(MongoTemplate.class);
-        databaseName = context.getBean(String.class);
-        db = mongoClient.getDatabase(databaseName);
-        measuredRecordCollection = db.getCollection("MeasuredRecord");
+
     }
 
     public MeasuredRecordService(MeasuredRecordModel measuredRecord) {
@@ -61,8 +75,8 @@ public class MeasuredRecordService {
         db = mongoClient.getDatabase(databaseName);
         measuredRecordCollection = db.getCollection("MeasuredRecord");
     }
-
-    public String addMeasurRecord(MeasuredRecordModel measuredRecord) {
+    public HashMap<String,String>  addMeasurRecord(MeasuredRecordModel measuredRecord) {
+        HashMap<String,String> map = new HashMap<String,String>();
         try {
             Gson gson = new Gson();
             String json = gson.toJson(measuredRecord);
@@ -74,11 +88,13 @@ public class MeasuredRecordService {
             measuredRecordCollection.insertOne(doc);
             String result = String.format("Inserted measured record for measureID = %s", measuredRecord.getMeasureID());
             System.out.println(result);
-            return result;
+            map.put("result", measuredRecord.getMeasureID());
+            return map;
         } catch (Exception ex) {
             ex.printStackTrace();
             System.out.println(ex.getMessage());
-            return ex.getMessage();
+            map.put("error", ex.getMessage());
+            return map;
         }
     }
 
@@ -120,5 +136,33 @@ public class MeasuredRecordService {
             ex.printStackTrace();
         }
         return null;
+    }
+
+    public HashMap<String,String>  pushNewPPGSignalRecordTo_MeasuredRecord(List<PPG_Signal> list) {
+        HashMap<String, String> map = new HashMap<>();
+        try {
+            Gson gson = new Gson();
+            String json = gson.toJson(list);
+            String measuredID = list.get(0).getMeasureId();
+            System.out.println(measuredID);
+            Bson filter = eq("measureID", measuredID);
+            //first record
+            Bson updates;
+            //updates= Updates.addToSet("ppgSignalSet", list);
+
+            //not first record
+            updates= Updates.push("ppgSignalSet", list);
+
+            UpdateResult pushSignalToMongoDBArray = measuredRecordCollection.updateOne(filter,updates);
+            String result = String.format("Matched count = %s, Modified count = %s",pushSignalToMongoDBArray.getMatchedCount(),pushSignalToMongoDBArray.getModifiedCount());
+            System.out.println(result);
+            map.put("result", result);
+            return map;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            System.out.println(ex.getMessage());
+            map.put("result", ex.getMessage());
+            return map;
+        }
     }
 }

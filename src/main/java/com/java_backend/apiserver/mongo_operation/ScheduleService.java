@@ -1,14 +1,19 @@
 package com.java_backend.apiserver.mongo_operation;
 
 import com.java_backend.apiserver.config.mongodb_config.MongoConfig;
+import com.java_backend.apiserver.model.QueryModel;
+import com.java_backend.apiserver.model.QueryModelForSchedule;
 import com.java_backend.apiserver.model.Schedule;
+import com.mongodb.BasicDBObject;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.result.InsertOneResult;
 import com.mongodb.client.result.UpdateResult;
 import static com.mongodb.client.model.Filters.*;
 
+import java.util.HashMap;
 
 import org.bson.Document;
 import org.bson.conversions.Bson;
@@ -16,6 +21,7 @@ import org.bson.types.ObjectId;
 import org.json.JSONArray;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
 public class ScheduleService {
@@ -55,23 +61,26 @@ public class ScheduleService {
         scheduleCollection = db.getCollection("Schedule");
     }
 
-    public String addNewSchedule(){
+    public HashMap<String,String> addNewSchedule(){
+        HashMap<String, String> map = new HashMap<>();
         try{
             Document doc = new Document();
             doc.put("ownerIdInUserCollection",  new ObjectId(schedule.getOwnerInUserCollection()));
             doc.put("activityIdInActivityCollection", new ObjectId(schedule.getActivityIdInActivityCollection()));
+            doc.put("activityName", schedule.getActivityName());
+            doc.put("category", schedule.getCategory());
             doc.put("startDateTime", schedule.getStartDateTime());
             doc.put("endDateTime", schedule.getEndDateTime());
-            doc.put("isAlert", schedule.getIsAlert());
-            doc.put("alertValue",schedule.getAlertValue());
             doc.put("status", "scheduled");
-            scheduleCollection.insertOne(doc);
-            System.out.println("Added new schedule");
+            InsertOneResult result =scheduleCollection.insertOne(doc);
+            System.out.println("Added new schedule "+result.getInsertedId().asObjectId().getValue().toString());
+            map.put("_id for inserted schedule", result.getInsertedId().asObjectId().getValue().toString());
         }catch(Exception ex){
             ex.printStackTrace();
-            return ex.getMessage();
+            map.put("error", ex.getMessage());
+            return map;
         }
-        return String.format("Added new Schedule");
+        return map;
     }
 
     public String updateSchedule(Schedule schedule){
@@ -82,8 +91,6 @@ public class ScheduleService {
             doc.put("activityIdInActivityCollection", new ObjectId(schedule.getActivityIdInActivityCollection()));
             doc.put("startDateTime", schedule.getStartDateTime());
             doc.put("endDateTime", schedule.getEndDateTime());
-            doc.put("isAlert", schedule.getIsAlert());
-            doc.put("alertValue",schedule.getAlertValue());
             doc.put("status", "scheduled");
             UpdateResult updateResult =scheduleCollection.replaceOne(filter, doc);
             return updateResult.toString();
@@ -106,11 +113,23 @@ public class ScheduleService {
         return null;
     }
 
-    public String getScheduleInfoForOwner(String ownerId){
-        Bson filter = eq("ownerIdInUserCollection", new ObjectId(ownerId));
+    public String getScheduleInfoForOwner(QueryModelForSchedule model){
+        String ownerID = model.getUserID();
+        Bson filter = eq("ownerIdInUserCollection", new ObjectId(ownerID));
         JSONArray results = new JSONArray();
         try{
-            MongoCursor<Document> cursor=scheduleCollection.find(filter).iterator();
+            MongoCursor<Document> cursor=null;
+            if(model.getStatus()!=null){
+                filter = eq("status", model.getStatus());
+                cursor=scheduleCollection.find(filter).sort(new BasicDBObject("startDateTime",1)).iterator();
+            }else if(model.getSortByField()!=null){
+                if(model.getSortOrder())
+                    cursor=scheduleCollection.find(filter).sort(new BasicDBObject(model.getSortByField(),1)).iterator();
+                else
+                    cursor=scheduleCollection.find(filter).sort(new BasicDBObject(model.getSortByField(),-1)).iterator();
+            }else{
+                cursor=scheduleCollection.find(filter).sort(new BasicDBObject("startDateTime",1)).iterator();
+            }
             while(cursor.hasNext()){
                 Document document=cursor.next();
                 results.put(document.toJson());

@@ -2,6 +2,7 @@ package com.java_backend.apiserver.mongo_operation;
 
 import com.java_backend.apiserver.config.mongodb_config.MongoConfig;
 import com.java_backend.apiserver.model.MeasuredRecord.MeasuredRecordModel;
+import com.java_backend.apiserver.model.MeasuredRecord.MeasuredResult;
 import com.java_backend.apiserver.model.MeasuredRecord.PPG_Signal;
 import com.java_backend.apiserver.model.MeasuredRecord.PPG_SignalSet;
 import com.java_backend.apiserver.util.DateUtil;
@@ -31,7 +32,6 @@ import org.bson.Document;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.pojo.PojoCodecProvider;
 import org.bson.conversions.Bson;
-import org.bson.types.ObjectId;
 import org.json.JSONArray;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -165,4 +165,31 @@ public class MeasuredRecordService {
             return map;
         }
     }
+
+    public HashMap<String,String>  pushNewMeasuredResult_To_MeasuredRecord(MeasuredResult measuredResult) {
+        HashMap<String, String> map = new HashMap<>();
+        try {
+            String measuredID = measuredResult.getMeasureID();
+            System.out.println(measuredID);
+            Bson filter = eq("measureID", measuredID);
+            //first record
+            Bson updates;
+            //updates= Updates.addToSet("ppgSignalSet", list);
+
+            //not first record
+            updates= Updates.push("measuredResult", measuredResult);
+
+            UpdateResult pushSignalToMongoDBArray = measuredRecordCollection.updateOne(filter,updates);
+            String result = String.format("Matched count = %s, Modified count = %s",pushSignalToMongoDBArray.getMatchedCount(),pushSignalToMongoDBArray.getModifiedCount());
+            System.out.println(result);
+            map.put("result", result);
+            return map;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            System.out.println(ex.getMessage());
+            map.put("result", ex.getMessage());
+            return map;
+        }
+    }
+
 }

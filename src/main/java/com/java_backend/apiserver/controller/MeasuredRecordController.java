@@ -4,6 +4,7 @@ import java.util.HashMap;
 
 import com.java_backend.apiserver.model.MeasuredRecord.MeasuredRecordFilter;
 import com.java_backend.apiserver.model.MeasuredRecord.MeasuredRecordModel;
+import com.java_backend.apiserver.model.MeasuredRecord.MeasuredResult;
 import com.java_backend.apiserver.model.MeasuredRecord.PPG_SignalSet;
 import com.java_backend.apiserver.mongo_operation.MeasuredRecordService;
 import com.java_backend.apiserver.util.RequestVerifyUtil;
@@ -35,6 +36,14 @@ public class MeasuredRecordController {
         RequestVerifyUtil.printRequestBody("/pushNewPPGSignalRecordTo_MeasuredRecord",  String.valueOf(signalSet.getPpgSignalSet().size()));
         MeasuredRecordService measuredRecordService = new MeasuredRecordService();
         HashMap<String,String> result = measuredRecordService.pushNewPPGSignalRecordTo_MeasuredRecord(signalSet.getPpgSignalSet());
+        return result;
+    }
+
+    @PostMapping(value = "/pushNewMeasuredResult_To_MeasuredRecord", consumes = "application/json", produces = "application/json")
+    public HashMap<String,String> pushNewMeasuredResult_To_MeasuredRecord(@RequestBody MeasuredResult measuredResult) {
+        RequestVerifyUtil.printRequestBody("/pushNewMeasuredResult_To_MeasuredRecord",  measuredResult.toString());
+        MeasuredRecordService measuredRecordService = new MeasuredRecordService();
+        HashMap<String,String> result = measuredRecordService.pushNewMeasuredResult_To_MeasuredRecord(measuredResult);
         return result;
     }
 

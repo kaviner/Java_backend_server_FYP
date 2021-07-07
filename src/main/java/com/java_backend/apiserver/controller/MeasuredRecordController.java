@@ -1,6 +1,7 @@
 package com.java_backend.apiserver.controller;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import com.java_backend.apiserver.model.MeasuredRecord.MeasuredRecordFilter;
 import com.java_backend.apiserver.model.MeasuredRecord.MeasuredRecordModel;
@@ -47,6 +48,28 @@ public class MeasuredRecordController {
         return result;
     }
 
+    @PostMapping(value = "/pushNewRestingData_To_Profile", consumes = "application/json", produces = "application/json")
+    public HashMap<String,String> pushNewRestingData_To_Profile(@RequestBody MeasuredResult measuredResult) {
+        RequestVerifyUtil.printRequestBody("/pushNewRestingData_To_Profile",  measuredResult.toString());
+        MeasuredRecordService measuredRecordService = new MeasuredRecordService();
+        HashMap<String,String> result = measuredRecordService.pushNewRestingData_To_Profile(measuredResult);
+        return result;
+    }
 
+    @PostMapping(value = "/updateOverallResultForThisProfile", consumes = "application/json", produces = "application/json")
+    public HashMap<String,String> updateOverallResultForThisProfile(@RequestBody Map<String,String> profile) {
+        RequestVerifyUtil.printRequestBody("/updateOverallResultForThisProfile",  profile.toString());
+        MeasuredRecordService measuredRecordService = new MeasuredRecordService();
+        HashMap<String,String> result = measuredRecordService.updateOverallResultForThisProfile(profile.get("_id").toString());
+        return result;
+    }
+
+    @PostMapping(value = "/updateOverallResultForThisMeasure", consumes = "application/json", produces = "application/json")
+    public HashMap<String,String> updateOverallResultForThisMeasure(@RequestBody Map<String,String> measuredResult) {
+        RequestVerifyUtil.printRequestBody("/updateOverallResultForThisMeasure",  measuredResult.toString());
+        MeasuredRecordService measuredRecordService = new MeasuredRecordService();
+        HashMap<String,String> result = measuredRecordService.updateOverallResultForThisMeasure(measuredResult.get("measureID").toString());
+        return result;
+    }
 
 }

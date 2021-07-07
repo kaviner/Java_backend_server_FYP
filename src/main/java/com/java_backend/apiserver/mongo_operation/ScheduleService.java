@@ -9,16 +9,19 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.InsertOneResult;
 import com.mongodb.client.result.UpdateResult;
 import static com.mongodb.client.model.Filters.*;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.data.domain.Sort;
@@ -65,13 +68,13 @@ public class ScheduleService {
         HashMap<String, String> map = new HashMap<>();
         try{
             Document doc = new Document();
-            doc.put("ownerIdInUserCollection",  new ObjectId(schedule.getOwnerInUserCollection()));
+            doc.put("ownerIdInUserCollection",  new ObjectId(schedule.getOwnerInUserCollection().toString()));
             doc.put("activityIdInActivityCollection", new ObjectId(schedule.getActivityIdInActivityCollection()));
             doc.put("activityName", schedule.getActivityName());
             doc.put("category", schedule.getCategory());
             doc.put("startDateTime", schedule.getStartDateTime());
             doc.put("endDateTime", schedule.getEndDateTime());
-            doc.put("status", "scheduled");
+            doc.put("status", schedule.getStatus());
             InsertOneResult result =scheduleCollection.insertOne(doc);
             System.out.println("Added new schedule "+result.getInsertedId().asObjectId().getValue().toString());
             map.put("_id for inserted schedule", result.getInsertedId().asObjectId().getValue().toString());
@@ -83,34 +86,45 @@ public class ScheduleService {
         return map;
     }
 
-    public String updateSchedule(Schedule schedule){
+    public HashMap<String,String> updateSchedule(Schedule schedule){
+        HashMap<String,String> map = new HashMap<String,String>();
+
         try{
-            Bson filter = eq("_id", new ObjectId(schedule.get_id()));
+            Bson filter = eq("_id", new ObjectId(schedule.get_id().toString()));
             Document doc = new Document();
             doc.put("ownerIdInUserCollection",  new ObjectId(schedule.getOwnerInUserCollection()));
             doc.put("activityIdInActivityCollection", new ObjectId(schedule.getActivityIdInActivityCollection()));
+            doc.put("activityName", schedule.getActivityName());
             doc.put("startDateTime", schedule.getStartDateTime());
             doc.put("endDateTime", schedule.getEndDateTime());
-            doc.put("status", "scheduled");
+            doc.put("status", schedule.getStatus());
+            doc.put("category", schedule.getCategory());
             UpdateResult updateResult =scheduleCollection.replaceOne(filter, doc);
-            return updateResult.toString();
+            map.put("result", updateResult.toString());
+            return map;
         }catch(Exception ex){
             ex.printStackTrace();
             System.out.println(ex.getMessage());
+            map.put("result", ex.getMessage());
+            return map;
         }
-        return null;
     }
 
-    public String deleteSchedule(String scheduleId){
+    public HashMap<String, String> deleteSchedule(Map<String, String> scheduleId){
+        HashMap<String, String> map = new HashMap<>();
         try{
-            Bson filter = eq("_id", new ObjectId(scheduleId));
-            scheduleCollection.deleteOne(filter);
-            return "Deleted schedule: "+scheduleId;
+            System.out.println(scheduleId.get("_id").toString());
+            Bson filter = eq("_id",new ObjectId(scheduleId.get("_id").toString()));
+            // Bson filter = eq("_id",new ObjectId("6059994458b4857c101a5185"));
+            DeleteResult result= scheduleCollection.deleteOne(filter);
+            map.put("deletedResult", String.valueOf(result.getDeletedCount()));
+            return map;
         }catch(Exception ex){
             ex.printStackTrace();
             System.out.println(ex.getMessage());
+            map.put("result", ex.getMessage());
+            return map;
         }
-        return null;
     }
 
     public String getScheduleInfoForOwner(QueryModelForSchedule model){

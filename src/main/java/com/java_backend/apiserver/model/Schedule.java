@@ -13,9 +13,9 @@ public class Schedule {
     private String activityIdInActivityCollection;
     private String activityName;
     private String category;
-    @JsonFormat(locale="zh", timezone="GMT+8", pattern="yyyy-MM-dd HH:mm:ss.SSS")
+    @JsonFormat(locale="zh", timezone="UTC", pattern="yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
     private Date startDateTime;
-    @JsonFormat(locale="zh", timezone="GMT+8", pattern="yyyy-MM-dd HH:mm:ss.SSS")
+    @JsonFormat(locale="zh", timezone="UTC", pattern="yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
     private Date endDateTime;
     private String status;
     

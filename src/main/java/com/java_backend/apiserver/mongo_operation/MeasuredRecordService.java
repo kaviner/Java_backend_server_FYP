@@ -4,27 +4,20 @@ import com.java_backend.apiserver.config.mongodb_config.MongoConfig;
 import com.java_backend.apiserver.model.MeasuredRecord.MeasuredRecordModel;
 import com.java_backend.apiserver.model.MeasuredRecord.MeasuredResult;
 import com.java_backend.apiserver.model.MeasuredRecord.PPG_Signal;
-import com.java_backend.apiserver.model.MeasuredRecord.PPG_SignalSet;
 import com.java_backend.apiserver.util.DateUtil;
 import com.java_backend.apiserver.model.MeasuredRecord.MeasuredRecordFilter;
 import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.client.AggregateIterable;
-import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
-import com.mongodb.client.model.Filters;
-import com.mongodb.client.model.PushOptions;
 import com.mongodb.client.model.Updates;
 import com.mongodb.client.result.UpdateResult;
 
 import static com.mongodb.client.model.Filters.*;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -32,9 +25,6 @@ import java.util.List;
 
 import com.google.gson.Gson;
 
-import org.bson.BsonArray;
-import org.bson.BsonDocument;
-import org.bson.BsonDouble;
 import org.bson.Document;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.pojo.PojoCodecProvider;
@@ -51,8 +41,6 @@ import static com.mongodb.client.model.Projections.include;
 import static com.mongodb.client.model.Aggregates.project;
 import static com.mongodb.client.model.Aggregates.unwind;
 import static com.mongodb.client.model.Aggregates.replaceRoot;
-import com.mongodb.client.model.Field;
-import java.util.concurrent.TimeUnit;
 
 public class MeasuredRecordService {
     private ApplicationContext context;
@@ -196,25 +184,23 @@ public class MeasuredRecordService {
             // first record
             Bson updates;
 
-
-
             String userID = measuredResult.getMeasureID().substring(0, 24);
             Bson userFilter = eq("_id", new ObjectId(userID));
             Document userProfile = userCollection.find(userFilter).first();
+            System.out.println(userProfile.toString());
             double restingAvgHeartRate = (double) userProfile.get("restingAvgHeartRate");
             double restingAvgPPI = (double) userProfile.get("restingAvgPPI");
             System.out.println(
                     String.format("restingAvgHeartRate=%s, restingAvgPPI=%s", restingAvgHeartRate, restingAvgPPI));
 
-            double AvgPercentageLargerThanRestingBPM = measuredResult.getAvg_overall_bpm() / restingAvgHeartRate
-                    - 1;
+            double AvgPercentageLargerThanRestingBPM = measuredResult.getAvg_overall_bpm() / restingAvgHeartRate - 1;
             /*
              * resting avg bpm * (1+x%) = measure avg bpm 69.35714285714286 *(1+ x%) =
              * 82.14285714285714 82.14285714285714 / 69.35714285714286 = 1 + x% x% =
              * 82.14285714285714 / 69.35714285714286 -1
              */
 
-            double AvgPercentageSmallerThanRestingPPI = 1 - (measuredResult.getAvg_overall_ppi()/ restingAvgPPI);
+            double AvgPercentageSmallerThanRestingPPI = 1 - (measuredResult.getAvg_overall_ppi() / restingAvgPPI);
             /*
              * measureAvgPPI = restingAvgPPI*(1-x%) measureAvgPPI/restingAvgPPI = 1-x% x% =
              * 1-measureAvgPPI/restingAvgPPI
@@ -404,5 +390,16 @@ public class MeasuredRecordService {
 
         return map;
     }
-    
+
+    public HashMap<String, String> getOverallResultForTheRecord(String measureID) {
+        HashMap<String, String> map = new HashMap<String, String>();
+ 
+        Document result = measuredRecordCollection.find(eq("measureID",measureID)).first();
+        if (result != null) {
+            map.put("result", result.toString());
+        }else{
+            map.put("result", "no this MeasuredRecord");
+        }
+        return map;
+    }
 }

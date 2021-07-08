@@ -206,7 +206,7 @@ public class MeasuredRecordService {
             System.out.println(
                     String.format("restingAvgHeartRate=%s, restingAvgPPI=%s", restingAvgHeartRate, restingAvgPPI));
 
-            double AvgPercentageLargerThanRestingBPM = measuredResult.getAvg_overall_bpm() / restingAvgHeartRate)
+            double AvgPercentageLargerThanRestingBPM = measuredResult.getAvg_overall_bpm() / restingAvgHeartRate
                     - 1;
             /*
              * resting avg bpm * (1+x%) = measure avg bpm 69.35714285714286 *(1+ x%) =

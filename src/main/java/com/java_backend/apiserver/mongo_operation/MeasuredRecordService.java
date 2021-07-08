@@ -32,6 +32,9 @@ import java.util.List;
 
 import com.google.gson.Gson;
 
+import org.bson.BsonArray;
+import org.bson.BsonDocument;
+import org.bson.BsonDouble;
 import org.bson.Document;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.pojo.PojoCodecProvider;
@@ -46,6 +49,8 @@ import static com.mongodb.client.model.Aggregates.addFields;
 import static com.mongodb.client.model.Aggregates.match;
 import static com.mongodb.client.model.Projections.include;
 import static com.mongodb.client.model.Aggregates.project;
+import static com.mongodb.client.model.Aggregates.unwind;
+import static com.mongodb.client.model.Aggregates.replaceRoot;
 import com.mongodb.client.model.Field;
 import java.util.concurrent.TimeUnit;
 
@@ -190,14 +195,39 @@ public class MeasuredRecordService {
             Bson filter = eq("measureID", measuredID);
             // first record
             Bson updates;
-            updates = Updates.push("measuredResult", measuredResult);
 
+
+
+            String userID = measuredResult.getMeasureID().substring(0, 24);
+            Bson userFilter = eq("_id", new ObjectId(userID));
+            Document userProfile = userCollection.find(userFilter).first();
+            double restingAvgHeartRate = (double) userProfile.get("restingAvgHeartRate");
+            double restingAvgPPI = (double) userProfile.get("restingAvgPPI");
+            System.out.println(
+                    String.format("restingAvgHeartRate=%s, restingAvgPPI=%s", restingAvgHeartRate, restingAvgPPI));
+
+            double AvgPercentageLargerThanRestingBPM = measuredResult.getAvg_overall_bpm() / restingAvgHeartRate)
+                    - 1;
+            /*
+             * resting avg bpm * (1+x%) = measure avg bpm 69.35714285714286 *(1+ x%) =
+             * 82.14285714285714 82.14285714285714 / 69.35714285714286 = 1 + x% x% =
+             * 82.14285714285714 / 69.35714285714286 -1
+             */
+
+            double AvgPercentageSmallerThanRestingPPI = 1 - (measuredResult.getAvg_overall_ppi()/ restingAvgPPI);
+            /*
+             * measureAvgPPI = restingAvgPPI*(1-x%) measureAvgPPI/restingAvgPPI = 1-x% x% =
+             * 1-measureAvgPPI/restingAvgPPI
+             */
+            measuredResult.setStressValue(AvgPercentageSmallerThanRestingPPI);
+            updates = Updates.push("measuredResult", measuredResult);
             UpdateResult pushSignalToMongoDBArray = measuredRecordCollection.updateOne(filter, updates);
             String result = String.format("Matched count = %s, Modified count = %s",
                     pushSignalToMongoDBArray.getMatchedCount(), pushSignalToMongoDBArray.getModifiedCount());
             System.out.println(result);
             map.put("result", result);
             map = updateOverallResultForThisMeasure(measuredID);
+
             return map;
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -208,56 +238,47 @@ public class MeasuredRecordService {
     }
 
     public HashMap<String, String> updateOverallResultForThisMeasure(String measureId) {
-        //Aggregate stat data 
-        Document result = measuredRecordCollection.aggregate(Arrays.asList(
-                match(eq("measureID", measureId)),
+        HashMap<String, String> map = new HashMap<String, String>();
+
+        // Aggregate stat data
+        Document result = measuredRecordCollection.aggregate(Arrays.asList(match(eq("measureID", measureId)),
                 addFields(new Field("lowest_PPI_Value", new Document("$min", "$measuredResult.avg_overall_ppi")),
                         new Field("highest_PPI_Value", new Document("$max", "$measuredResult.avg_overall_ppi")),
                         new Field("avg_PPI_Value", new Document("$avg", "$measuredResult.avg_overall_ppi")),
                         new Field("lowest_BPM_Value", new Document("$min", "$measuredResult.avg_overall_bpm")),
                         new Field("highest_BPM_Value", new Document("$max", "$measuredResult.avg_overall_bpm")),
-                        new Field("avg_BPM_Value", new Document("$avg", "$measuredResult.avg_overall_bpm"))),
+                        new Field("avg_BPM_Value", new Document("$avg", "$measuredResult.avg_overall_bpm")),
+                        new Field("avg_StressLevel_Value", new Document("$avg", "$measuredResult.stressValue")),
+                        new Field("lowest_StressLevel_Value", new Document("$min", "$measuredResult.stressValue")),
+                        new Field("highest_StressLevel_Value", new Document("$max", "$measuredResult.stressValue"))),
                 project(include("lowest_PPI_Value", "highest_PPI_Value", "avg_PPI_Value", "lowest_BPM_Value",
-                        "highest_BPM_Value", "avg_BPM_Value"))))
+                        "highest_BPM_Value", "avg_BPM_Value", "avg_StressLevel_Value", "lowest_StressLevel_Value",
+                        "highest_StressLevel_Value"))))
                 .first();
-        System.out.println(result.toString());
+        if (result != null) {
+            System.out.println(result.toString());
 
-        Bson filters = eq("measureID", measureId);
-        BasicDBObject updates = new BasicDBObject();
-        BasicDBObject set = new BasicDBObject("$set", updates);
-        updates.put("lowest_PPI_Value", result.get("lowest_PPI_Value"));
-        updates.put("highest_PPI_Value", result.get("highest_PPI_Value"));
-        updates.put("avg_PPI_Value", result.get("avg_PPI_Value"));
-        updates.put("lowest_BPM_Value", result.get("lowest_BPM_Value"));
-        updates.put("lowest_PPI_Value", result.get("lowest_PPI_Value"));
-        updates.put("highest_BPM_Value", result.get("highest_BPM_Value"));
-        updates.put("avg_BPM_Value", result.get("avg_BPM_Value"));
-        UpdateResult updateResult = measuredRecordCollection.updateOne(filters, set);
-        HashMap<String, String> map = new HashMap<String, String>();
-
-        String userID = measureId.substring(0, 24);
-        Document userResult = userCollection.find(eq("_id", new ObjectId(userID))).first();
-        double restingAvgHeartRate = (double) userResult.get("restingAvgHeartRate");
-        double restingAvgPPI = (double) userResult.get("restingAvgPPI");
-        System.out.println(String.format("restingAvgHeartRate=%s, restingAvgPPI=%s", restingAvgHeartRate,restingAvgPPI));
-        double AvgPercentageLargerThanRestingBPM = (((double)result.get("avg_BPM_Value")) / restingAvgHeartRate)-1;
-        /*
-        resting avg bpm * (1+x%) = measure avg bpm
-        69.35714285714286 *(1+ x%) = 82.14285714285714
-        82.14285714285714 / 69.35714285714286 = 1 + x%
-        x% = 82.14285714285714 / 69.35714285714286 -1
-        */
-        
-        double AvgPercentageLargerThanRestingPPI = 1-(((double)result.get("avg_PPI_Value")) / restingAvgPPI);
-        /*
-        measureAvgPPI = restingAvgPPI*(1-x%)
-        measureAvgPPI/restingAvgPPI = 1-x%
-        x% = 1-measureAvgPPI/restingAvgPPI
-        */
-        System.out.println(String.format("AvgPercentageLargerThanRestingBPM=%s, AvgPercentageSmallerThanRestingPPI=%s", AvgPercentageLargerThanRestingBPM,AvgPercentageLargerThanRestingPPI));
-
-
-        map.put("result", updateResult.toString());
+            Bson filters = eq("measureID", measureId);
+            BasicDBObject updates = new BasicDBObject();
+            BasicDBObject set = new BasicDBObject("$set", updates);
+            updates.put("lowest_PPI_Value", result.get("lowest_PPI_Value"));
+            updates.put("highest_PPI_Value", result.get("highest_PPI_Value"));
+            updates.put("avg_PPI_Value", result.get("avg_PPI_Value"));
+            updates.put("lowest_BPM_Value", result.get("lowest_BPM_Value"));
+            updates.put("lowest_PPI_Value", result.get("lowest_PPI_Value"));
+            updates.put("highest_BPM_Value", result.get("highest_BPM_Value"));
+            updates.put("avg_BPM_Value", result.get("avg_BPM_Value"));
+            updates.put("lowest_StressLevel_Value", (double) result.get("lowest_StressLevel_Value") * 100);
+            updates.put("highest_StressLevel_Value", (double) result.get("highest_StressLevel_Value") * 100);
+            updates.put("avg_StressLevel_Value", (double) result.get("avg_StressLevel_Value") * 100);
+            updates.put("lowest_FatigueLevel_Value", (double) result.get("lowest_StressLevel_Value") * 100);
+            updates.put("highest_FatigueLevel_Value", (double) result.get("highest_StressLevel_Value") * 100);
+            updates.put("avg_FatigueLevel_Value", (double) result.get("avg_StressLevel_Value") * 100);
+            UpdateResult updateResult = measuredRecordCollection.updateOne(filters, set);
+            map.put("result", updateResult.toString());
+        } else {
+            map.put("result", "aggregrate result =null");
+        }
         return map;
     }
 
@@ -270,10 +291,18 @@ public class MeasuredRecordService {
             Bson filter = eq("_id", new ObjectId(userID));
 
             Bson updatesPPIArray;
-            updatesPPIArray = Updates.push("avgRestingAvgPPIArray", measuredResult.getAvg_overall_ppi());
+            // SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+
+            Document newAvgRestingAvgPPIElement = new Document();
+            newAvgRestingAvgPPIElement.append("avgRestingAvgPPI", measuredResult.getAvg_overall_ppi());
+            newAvgRestingAvgPPIElement.append("timestamp", new Date());
+            updatesPPIArray = Updates.push("avgRestingAvgPPIArray", newAvgRestingAvgPPIElement);
 
             Bson updatesHRArray;
-            updatesHRArray = Updates.push("avgRestingAvgHRArray", measuredResult.getAvg_overall_bpm());
+            Document newAvgRestingAvgHRElement = new Document();
+            newAvgRestingAvgHRElement.append("avgRestingAvgHR", measuredResult.getAvg_overall_bpm());
+            newAvgRestingAvgHRElement.append("timestamp", new Date());
+            updatesHRArray = Updates.push("avgRestingAvgHRArray", newAvgRestingAvgHRElement);
 
             UpdateResult pushAvgHRToProfile = userCollection.updateOne(filter, updatesPPIArray);
             String result = String.format("Matched count = %s, Modified count = %s",
@@ -299,12 +328,13 @@ public class MeasuredRecordService {
     public HashMap<String, String> updateOverallResultForThisProfile(String profileID) {
         HashMap<String, String> map = new HashMap<String, String>();
         try {
-            Document result = userCollection
-                    .aggregate(Arrays.asList(match(eq("_id", new ObjectId(profileID))),
-                            addFields(new Field("restingAvgHeartRate", new Document("$avg", "$avgRestingAvgHRArray")),
-                                    new Field("restingAvgPPI", new Document("$avg", "$avgRestingAvgPPIArray"))),
-                            project(include("restingAvgHeartRate", "restingAvgPPI"))))
-                    .first();
+            Document result = userCollection.aggregate(Arrays.asList(match(eq("_id", new ObjectId(profileID))),
+                    addFields(
+                            new Field("restingAvgHeartRate",
+                                    new Document("$avg", "$avgRestingAvgHRArray.avgRestingAvgHR")),
+                            new Field("restingAvgPPI",
+                                    new Document("$avg", "$avgRestingAvgPPIArray.avgRestingAvgPPI"))),
+                    project(include("restingAvgHeartRate", "restingAvgPPI")))).first();
             System.out.println(result.toString());
 
             Bson filters = eq("_id", new ObjectId(profileID));
@@ -322,4 +352,57 @@ public class MeasuredRecordService {
         }
         return map;
     }
+
+    public HashMap<String, String> updateStressValue(String measuredID) {
+        HashMap<String, String> map = new HashMap<String, String>();
+        String userID = measuredID.substring(0, 24);
+        // Get measuredResult
+        // Bson filter = eq("measureID", measuredID)
+        // Document measuredResult = measuredRecordCollection.find(filter).first();
+
+        AggregateIterable<Document> iter = measuredRecordCollection
+                .aggregate(Arrays.asList(match(eq("measureID", measuredID)),
+                        project(include("measuredResult.avg_overall_bpm", "measuredResult.avg_overall_ppi")),
+                        unwind("$measuredResult"), replaceRoot("$measuredResult")));
+
+        // Replace meauredResult with updatedStressValue
+        MongoCursor<Document> cursor = iter.iterator();
+        Bson userFilter = eq("_id", new ObjectId(userID));
+        Document userProfile = userCollection.find(userFilter).first();
+        double restingAvgHeartRate = (double) userProfile.get("restingAvgHeartRate");
+        double restingAvgPPI = (double) userProfile.get("restingAvgPPI");
+        int index = 0;
+        while (cursor.hasNext()) {
+            // Get resting avg ppi, avg bpm
+            Document result = cursor.next();
+            System.out.println(result.toString());
+            double AvgPercentageLargerThanRestingBPM = (((double) result.get("avg_overall_bpm")) / restingAvgHeartRate)
+                    - 1;
+            /*
+             * resting avg bpm * (1+x) = measure avg bpm 69.35714285714286 *(1+ x%) =
+             * 82.14285714285714 82.14285714285714 / 69.35714285714286 = 1 + x% x =
+             * 82.14285714285714 / 69.35714285714286 -1 x = 18.4346035%
+             */
+
+            // double AvgPercentageLargerThanRestingPPI = 1 - (((double)
+            // result.get("measuredResult.avg_overall_ppi")) / restingAvgPPI);
+            double AvgPercentageLargerThanRestingPPI = 1 - (((double) result.get("avg_overall_ppi")) / restingAvgPPI);
+            /*
+             * measureAvgPPI = restingAvgPPI*(1-x%) 597.0699783/838.7387848 = 1-x% x%
+             * =1-597.0699783/838.738784 x = 28.8133577%
+             */
+            System.out.println(
+                    String.format("AvgPercentageLargerThanRestingBPM=%s, AvgPercentageSmallerThanRestingPPI=%s",
+                            AvgPercentageLargerThanRestingBPM, AvgPercentageLargerThanRestingPPI));
+            // array.add(new BsonDouble(AvgPercentageLargerThanRestingPPI));
+            Bson filters = eq("measureID", measuredID);
+            Bson updates = Updates.set("measuredResult." + (index++) + ".stressValue",
+                    AvgPercentageLargerThanRestingPPI);
+            measuredRecordCollection.updateOne(filters, updates);
+        }
+        map.put("result", "success");
+
+        return map;
+    }
+    
 }

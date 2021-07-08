@@ -45,13 +45,13 @@ public class UserService {
         userCollection = db.getCollection("User");
     }
 
-    public HashMap<String, String> checkUserIDExist(String mobileID,String alias) {
+    public HashMap<String, String> checkUserIDExist(String mobileID) {
+        System.out.println(String.format("mobileID=%s", mobileID));
         Bson filter = eq("mobileId", mobileID);
         Document user = userCollection.find(filter).first();
         HashMap<String,String> response  = new HashMap<String,String>();
         if(user==null){
             Document newUserProfile = new Document();
-            newUserProfile.append("alias", alias);
             newUserProfile.append("mobileId", mobileID);
             InsertOneResult result= userCollection.insertOne(newUserProfile);
             response.put("result", result.getInsertedId().asString().toString());

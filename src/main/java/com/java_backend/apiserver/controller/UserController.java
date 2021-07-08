@@ -15,7 +15,7 @@ public class UserController {
     public HashMap<String,String> checkUserIDExist(@RequestBody Map<String,String> user) {
         RequestVerifyUtil.printRequestBody("/checkUserIDExist", user.toString());
         UserService userService = new UserService();
-        HashMap<String,String> result = userService.checkUserIDExist(user.get("_id"),user.get("alias"));
+        HashMap<String,String> result = userService.checkUserIDExist(user.get("_id"));
         return result;
     }
 }

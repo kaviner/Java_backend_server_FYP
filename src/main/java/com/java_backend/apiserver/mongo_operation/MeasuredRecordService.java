@@ -14,11 +14,13 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Field;
+import com.mongodb.client.model.Projections;
 import com.mongodb.client.model.Updates;
 import com.mongodb.client.result.UpdateResult;
 
 import static com.mongodb.client.model.Filters.*;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -42,7 +44,7 @@ import static com.mongodb.client.model.Projections.include;
 import static com.mongodb.client.model.Aggregates.project;
 import static com.mongodb.client.model.Aggregates.unwind;
 import static com.mongodb.client.model.Aggregates.replaceRoot;
-
+import static com.mongodb.client.model.Projections.computed;
 public class MeasuredRecordService {
     private ApplicationContext context;
     private MeasuredRecordModel measuredRecord;
@@ -263,6 +265,7 @@ public class MeasuredRecordService {
             updates.put("avg_FatigueLevel_Value", (double) result.get("avg_StressLevel_Value") * 100);
             UpdateResult updateResult = measuredRecordCollection.updateOne(filters, set);
             map.put("result", updateResult.toString());
+            System.out.println(map.toString());
         } else {
             map.put("result", "aggregrate result =null");
         }
@@ -396,8 +399,12 @@ public class MeasuredRecordService {
         HashMap<String, String> map = new HashMap<String, String>();
  
         Document result = measuredRecordCollection.find(eq("measureID",measureID)).first();
+        Document lastElement = measuredRecordCollection.aggregate(Arrays.asList(match(eq("measureID", measureID)), project(computed("last", eq("$arrayElemAt", Arrays.asList("$measuredResult", -1L)))), replaceRoot("$last"))).first();
         if (result != null) {
+            double stressValueInLastMinute = lastElement.getDouble("stressValue")*100;
+            map.put("lastRecordStressValue",String.format("%.2f", stressValueInLastMinute) );
             map.put("result", result.toJson().toString());
+            System.out.println("returned latest result "+map.get("lastRecordStressValue"));
         }else{
             map.put("result", "no this MeasuredRecord");
         }

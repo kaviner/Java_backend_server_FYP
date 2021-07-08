@@ -397,7 +397,7 @@ public class MeasuredRecordService {
  
         Document result = measuredRecordCollection.find(eq("measureID",measureID)).first();
         if (result != null) {
-            map.put("result", result.toString());
+            map.put("result", result.toJson().toString());
         }else{
             map.put("result", "no this MeasuredRecord");
         }

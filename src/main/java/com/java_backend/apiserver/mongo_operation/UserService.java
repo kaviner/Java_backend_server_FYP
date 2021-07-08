@@ -49,6 +49,7 @@ public class UserService {
         System.out.println(String.format("mobileID=%s", mobileID));
         Bson filter = eq("mobileId", mobileID);
         Document user = userCollection.find(filter).first();
+        System.out.println(String.format("user=%s", user.toString()));
         HashMap<String,String> response  = new HashMap<String,String>();
         if(user==null){
             Document newUserProfile = new Document();

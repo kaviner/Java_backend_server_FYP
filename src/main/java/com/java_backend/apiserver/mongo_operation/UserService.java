@@ -46,18 +46,21 @@ public class UserService {
     }
 
     public HashMap<String, String> checkUserIDExist(String mobileID) {
-        System.out.println(String.format("mobileID=%s", mobileID));
-        Bson filter = eq("mobileId", mobileID);
-        Document user = userCollection.find(filter).first();
-        System.out.println(String.format("user=%s", user.toString()));
         HashMap<String,String> response  = new HashMap<String,String>();
-        if(user==null){
-            Document newUserProfile = new Document();
-            newUserProfile.append("mobileId", mobileID);
-            InsertOneResult result= userCollection.insertOne(newUserProfile);
-            response.put("result", result.getInsertedId().asString().toString());
-        }else{
-            response.put("result", user.get("_id").toString());
+        try{
+            System.out.println(String.format("mobileID=%s", mobileID));
+            Bson filter = eq("mobileId", mobileID);
+            Document user = userCollection.find(filter).first();
+            if(user==null){
+                Document newUserProfile = new Document();
+                newUserProfile.append("mobileId", mobileID);
+                InsertOneResult result= userCollection.insertOne(newUserProfile);
+                response.put("result", result.getInsertedId().asString().toString());
+            }else{
+                response.put("result", user.get("_id").toString());
+            }
+        }catch(Exception e){
+            e.printStackTrace();    
         }
         return response;
     }

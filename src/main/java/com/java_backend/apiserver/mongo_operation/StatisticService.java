@@ -69,7 +69,11 @@ public class StatisticService {
                             group("$userID", max("max", "$highest_BPM_Value"), min("min", "$lowest_BPM_Value"),
                                     avg("avg", "$avg_BPM_Value"))))
                     .first();
-            response.put("result", result.toJson().toString());
+            if(result==null){
+                response.put("result","No record");
+            }else{
+                response.put("result", result.toJson().toString());
+            }
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println(e.getMessage());
@@ -81,29 +85,29 @@ public class StatisticService {
     public HashMap<String, String> getHighestAndLowestStressLevelActivity(String userID) {
         HashMap<String, String> response = new HashMap<String, String>();
         try {
-            AggregateIterable<Document> highestPPI_ActivityList = measuredRecordCollection
-                    .aggregate(Arrays.asList(match(and(eq("userID", userID), ne("avg_PPI_Value", 0L))),
-                            sort(descending("avg_PPI_Value")), project(include("activityName"))));
-            MongoCursor<Document> iterator = highestPPI_ActivityList.iterator();
+            AggregateIterable<Document> highestStressLevel_ActivityList = measuredRecordCollection
+                    .aggregate(Arrays.asList(match(and(eq("userID", userID), ne("avg_StressLevel_Value", 0L))),
+                            sort(descending("avg_StressLevel_Value")), project(include("activityName"))));
+            MongoCursor<Document> iterator = highestStressLevel_ActivityList.iterator();
             JSONArray jArray = new JSONArray();
             while (iterator.hasNext()) {
                 Document next = iterator.next();
                 jArray.put(next.get("activityName"));
             }
-            response.put("highestPPI_ActivityList", jArray.toString());
+            response.put("highestStressLevel_ActivityList", jArray.toString());
 
-            AggregateIterable<Document> lowestPPI_ActivityList = measuredRecordCollection
-                    .aggregate(Arrays.asList(match(and(eq("userID", userID), ne("avg_PPI_Value", 0L))),
-                            sort(ascending("avg_PPI_Value")), project(include("activityName"))));
+            AggregateIterable<Document> lowestStressLevel_ActivityList = measuredRecordCollection
+                    .aggregate(Arrays.asList(match(and(eq("userID", userID), ne("avg_StressLevel_Value", 0L))),
+                            sort(ascending("avg_StressLevel_Value")), project(include("activityName"))));
 
-            MongoCursor<Document> iterator2 = lowestPPI_ActivityList.iterator();
+            MongoCursor<Document> iterator2 = lowestStressLevel_ActivityList.iterator();
             JSONArray jArray2 = new JSONArray();
             while (iterator2.hasNext()) {
                 Document next = iterator2.next();
                 jArray2.put(next.get("activityName"));
             }
 
-            response.put("lowestPPI_ActivityList", jArray2.toString());
+            response.put("lowestStressLevel_ActivityList", jArray2.toString());
 
         } catch (Exception e) {
             e.printStackTrace();

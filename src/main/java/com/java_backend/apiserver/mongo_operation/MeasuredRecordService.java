@@ -111,21 +111,11 @@ public class MeasuredRecordService {
     }
 
     public String getMeasuredRecordList(MeasuredRecordFilter measuredRecordFilter) {
-        String ownerID = measuredRecordFilter.getRecordOwner();
-        String fieldName = measuredRecordFilter.getSortByFieldName();
-        String startDateString = measuredRecordFilter.getStartDateTime();
-        String endDateString = measuredRecordFilter.getEndDateTime();
-        Boolean isAscending = measuredRecordFilter.getIsAscending();
+        String ownerID = measuredRecordFilter.getUserID();
+        String fieldName = measuredRecordFilter.getSortByField();
+        Boolean isAscending = measuredRecordFilter.getSortOrder();
 
-        Date startDate;
-        Date startEndDate;
-        startDate = DateUtil.stringToDate(startDateString);
-
-        startEndDate = DateUtil.stringToDate(endDateString);
-        System.out.println(startDate);
-
-        Bson filter = and(eq("userID", ownerID),
-                and(gte("startDateTime", startDate), lte("startDateTime", startEndDate)));
+        Bson filter = eq("userID", ownerID);
         // Bson filter= eq("userID", ownerID);
         JSONArray results = new JSONArray();
         try {
@@ -141,7 +131,7 @@ public class MeasuredRecordService {
                 Document document = cursor.next();
                 results.put(document.toJson());
             }
-            System.out.println(String.format("QueryResult=%s", results.toString()));
+            //System.out.println(String.format("QueryResult=%s", results.toString()));
             return results.toString();
         } catch (Exception ex) {
             ex.printStackTrace();

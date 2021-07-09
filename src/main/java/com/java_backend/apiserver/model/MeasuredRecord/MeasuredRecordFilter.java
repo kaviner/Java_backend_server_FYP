@@ -5,90 +5,60 @@ import java.util.Objects;
 import org.bson.types.ObjectId;
 
 public class MeasuredRecordFilter {
-    private String recordOwner;
-    private String sortByFieldName;
-    private String startDateTime;
-    private String endDateTime;
-    private Boolean isAscending;
+    private String userID;
+    private String sortByField;
+    private Boolean sortOrder;
 
 
     public MeasuredRecordFilter() {
     }
 
-    public MeasuredRecordFilter(String recordOwner, String sortByFieldName, String startDateTime, String endDateTime, Boolean isAscending) {
-        this.recordOwner = recordOwner;
-        this.sortByFieldName = sortByFieldName;
-        this.startDateTime = startDateTime;
-        this.endDateTime = endDateTime;
-        this.isAscending = isAscending;
+    public MeasuredRecordFilter(String userID, String sortByField, Boolean sortOrder) {
+        this.userID = userID;
+        this.sortByField = sortByField;
+        this.sortOrder = sortOrder;
     }
 
-    public String getRecordOwner() {
-        return this.recordOwner;
+    public String getUserID() {
+        return this.userID;
     }
 
-    public void setRecordOwner(String recordOwner) {
-        this.recordOwner = recordOwner;
+    public void setUserID(String userID) {
+        this.userID = userID;
     }
 
-    public String getSortByFieldName() {
-        return this.sortByFieldName;
+    public String getSortByField() {
+        return this.sortByField;
     }
 
-    public void setSortByFieldName(String sortByFieldName) {
-        this.sortByFieldName = sortByFieldName;
+    public void setSortByField(String sortByField) {
+        this.sortByField = sortByField;
     }
 
-    public String getStartDateTime() {
-        return this.startDateTime;
+    public Boolean isSortOrder() {
+        return this.sortOrder;
     }
 
-    public void setStartDateTime(String startDateTime) {
-        this.startDateTime = startDateTime;
+    public Boolean getSortOrder() {
+        return this.sortOrder;
     }
 
-    public String getEndDateTime() {
-        return this.endDateTime;
+    public void setSortOrder(Boolean sortOrder) {
+        this.sortOrder = sortOrder;
     }
 
-    public void setEndDateTime(String endDateTime) {
-        this.endDateTime = endDateTime;
-    }
-
-    public Boolean isIsAscending() {
-        return this.isAscending;
-    }
-
-    public Boolean getIsAscending() {
-        return this.isAscending;
-    }
-
-    public void setIsAscending(Boolean isAscending) {
-        this.isAscending = isAscending;
-    }
-
-    public MeasuredRecordFilter recordOwner(String recordOwner) {
-        setRecordOwner(recordOwner);
+    public MeasuredRecordFilter userID(String userID) {
+        setUserID(userID);
         return this;
     }
 
-    public MeasuredRecordFilter sortByFieldName(String sortByFieldName) {
-        setSortByFieldName(sortByFieldName);
+    public MeasuredRecordFilter sortByField(String sortByField) {
+        setSortByField(sortByField);
         return this;
     }
 
-    public MeasuredRecordFilter startDateTime(String startDateTime) {
-        setStartDateTime(startDateTime);
-        return this;
-    }
-
-    public MeasuredRecordFilter endDateTime(String endDateTime) {
-        setEndDateTime(endDateTime);
-        return this;
-    }
-
-    public MeasuredRecordFilter isAscending(Boolean isAscending) {
-        setIsAscending(isAscending);
+    public MeasuredRecordFilter sortOrder(Boolean sortOrder) {
+        setSortOrder(sortOrder);
         return this;
     }
 
@@ -100,24 +70,25 @@ public class MeasuredRecordFilter {
             return false;
         }
         MeasuredRecordFilter measuredRecordFilter = (MeasuredRecordFilter) o;
-        return Objects.equals(recordOwner, measuredRecordFilter.recordOwner) && Objects.equals(sortByFieldName, measuredRecordFilter.sortByFieldName) && Objects.equals(startDateTime, measuredRecordFilter.startDateTime) && Objects.equals(endDateTime, measuredRecordFilter.endDateTime) && Objects.equals(isAscending, measuredRecordFilter.isAscending);
+        return Objects.equals(userID, measuredRecordFilter.userID) && Objects.equals(sortByField, measuredRecordFilter.sortByField) && Objects.equals(sortOrder, measuredRecordFilter.sortOrder);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(recordOwner, sortByFieldName, startDateTime, endDateTime, isAscending);
+        return Objects.hash(userID, sortByField, sortOrder);
     }
 
     @Override
     public String toString() {
         return "{" +
-            " recordOwner='" + getRecordOwner() + "'" +
-            ", sortByFieldName='" + getSortByFieldName() + "'" +
-            ", startDateTime='" + getStartDateTime() + "'" +
-            ", endDateTime='" + getEndDateTime() + "'" +
-            ", isAscending='" + isIsAscending() + "'" +
+            " userID='" + getUserID() + "'" +
+            ", sortByField='" + getSortByField() + "'" +
+            ", sortOrder='" + isSortOrder() + "'" +
             "}";
     }
+
+  
+   
 
   
 }

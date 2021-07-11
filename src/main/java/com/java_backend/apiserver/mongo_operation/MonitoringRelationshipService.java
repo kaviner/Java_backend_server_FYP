@@ -113,6 +113,7 @@ public class MonitoringRelationshipService {
             e.printStackTrace();
             response.put("result", e.getMessage());
         }
+        System.out.println(response.toString());
         return response;
     }
 
@@ -120,9 +121,9 @@ public class MonitoringRelationshipService {
         HashMap<String,String> response = new HashMap<String,String>();
         try{
 
-        boolean isValid =isValidRelationship(request);
-        if(isValid){
-            Bson filter = eq("userID", request.get("targetID"));
+        String targetID =isValidRelationship(request);
+        if(!targetID.equals("Invalid")){
+            Bson filter = eq("userID", targetID);
             Document result = measuredRecordCollection.find(filter).sort(new BasicDBObject("_id",-1)).first();
             response.put("result", result.toJson().toString());
         }else{
@@ -131,16 +132,21 @@ public class MonitoringRelationshipService {
 
         }catch(Exception e){
             response.put("error", e.getMessage());
+            System.out.println(e.getMessage());
         }
         return response;
     }
-    private boolean isValidRelationship(Map<String,String> request){
-        Bson filter = and(eq("targetID", request.get("targetID")),eq("pairCode", request.get("pairCode")));
+    private String isValidRelationship(Map<String,String> request){
+        String monitorID = request.get("monitorID");
+        String pairCode = request.get("pairCode");
+        Bson filter = and(eq("monitorID",monitorID),eq("pairCode",pairCode));
         Document result =monitoringRelationshipCollection.find(filter).first();
         if(result==null){
-            return false;
+            System.out.println("Invalid"+monitorID+" : "+pairCode);
+            return "Invalid";
         }else{
-            return true;
+            System.out.println("Valid");
+            return result.getString("targetID");
         }
     }
 

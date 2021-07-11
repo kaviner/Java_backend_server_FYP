@@ -113,9 +113,16 @@ public class MeasuredRecordService {
     public String getMeasuredRecordList(MeasuredRecordFilter measuredRecordFilter) {
         String ownerID = measuredRecordFilter.getUserID();
         String fieldName = measuredRecordFilter.getSortByField();
+        String category = null;
         Boolean isAscending = measuredRecordFilter.getSortOrder();
-
         Bson filter = eq("userID", ownerID);
+
+        if(measuredRecordFilter.getCategory()!=null){
+            category=measuredRecordFilter.getCategory();
+            filter = and(eq("userID", ownerID),eq("category", category));
+        }else{
+            filter = eq("userID", ownerID);
+        }
         // Bson filter= eq("userID", ownerID);
         JSONArray results = new JSONArray();
         try {

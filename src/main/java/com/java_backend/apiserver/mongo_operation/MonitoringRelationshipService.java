@@ -56,6 +56,7 @@ public class MonitoringRelationshipService {
         databaseName = context.getBean(String.class);
         db = mongoClient.getDatabase(databaseName);
         monitoringRelationshipCollection = db.getCollection("MonitoringRelationship");
+        measuredRecordCollection = db.getCollection("MeasuredRecord");
     }
 
     public MonitoringRelationshipService(MonitoringRelationship_1To1 relatonship) {
@@ -77,18 +78,17 @@ public class MonitoringRelationshipService {
         HashMap<String, String> response = new HashMap<String, String>();
         
         try{
-            Bson filter = eq("targetID", request.get("userID"));
-
-            Document doc = monitoringRelationshipCollection.find(filter).first();
-            if (doc == null) {
+            Bson filter = eq("targetID", request.get("targetID"));
+            Bson updates = Updates.set("pairCode", request.get("pairCode"));
+            Document doc = monitoringRelationshipCollection.findOneAndUpdate(filter,updates);
+            if (doc != null) {
+                response.put("result", "Exist relationship");
+            }else{
                 Document newRecord = new Document();
-                newRecord.append("targetID", request.get("userID"));
+                newRecord.append("targetID", request.get("targetID"));
                 newRecord.append("pairCode", request.get("pairCode"));
                 InsertOneResult result = monitoringRelationshipCollection.insertOne(newRecord);
                 response.put("result", result.toString());
-            }else{
-                response.put("result", "Exist relationship");
-                monitoringRelationshipCollection.deleteMany(filter);
             }
         }catch(Exception e){
             e.printStackTrace();
@@ -102,8 +102,8 @@ public class MonitoringRelationshipService {
         
         try{
             Bson filter = eq("pairCode", request.get("pairCode"));
-
-            Document doc = monitoringRelationshipCollection.find(filter).first();
+            Bson updates = Updates.set("monitorID", request.get("monitorID"));
+            Document doc = monitoringRelationshipCollection.findOneAndUpdate(filter,updates);
             if (doc == null) {
                 response.put("result", "false");
             }else{
@@ -119,13 +119,29 @@ public class MonitoringRelationshipService {
     public HashMap<String,String> getLastMeasuredRecord(Map<String,String> request){
         HashMap<String,String> response = new HashMap<String,String>();
         try{
-        Bson filter = eq("userID", request.get("targetID"));
-        Document result = measuredRecordCollection.find(filter).sort(new BasicDBObject("_id",-1)).first();
-        response.put("result", result.toJson().toString());
+
+        boolean isValid =isValidRelationship(request);
+        if(isValid){
+            Bson filter = eq("userID", request.get("targetID"));
+            Document result = measuredRecordCollection.find(filter).sort(new BasicDBObject("_id",-1)).first();
+            response.put("result", result.toJson().toString());
+        }else{
+            response.put("error","invalid relationship");
+        }
+
         }catch(Exception e){
-            response.put("result", e.getMessage());
+            response.put("error", e.getMessage());
         }
         return response;
+    }
+    private boolean isValidRelationship(Map<String,String> request){
+        Bson filter = and(eq("targetID", request.get("targetID")),eq("pairCode", request.get("pairCode")));
+        Document result =monitoringRelationshipCollection.find(filter).first();
+        if(result==null){
+            return false;
+        }else{
+            return true;
+        }
     }
 
     // public String addMonitoringRelationship(MonitoringRelationship_1To1 relationship) {

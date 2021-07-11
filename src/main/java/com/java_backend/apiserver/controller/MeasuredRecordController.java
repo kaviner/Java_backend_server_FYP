@@ -82,7 +82,7 @@ public class MeasuredRecordController {
 
     @PostMapping(value = "/getOverallResultForTheRecord", consumes = "application/json", produces = "application/json")
     public HashMap<String,String> getOverallResultForTheRecord(@RequestBody Map<String,String> recordInfo) {
-        RequestVerifyUtil.printRequestBody("/updateStressValue",  recordInfo.toString());
+        RequestVerifyUtil.printRequestBody("/getOverallResultForTheRecord",  recordInfo.toString());
         MeasuredRecordService measuredRecordService = new MeasuredRecordService();
         HashMap<String,String> result = measuredRecordService.getOverallResultForTheRecord(recordInfo.get("measureID").toString());
         return result;

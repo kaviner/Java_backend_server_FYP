@@ -127,11 +127,12 @@ public class MonitoringRelationshipService {
             Document result = measuredRecordCollection.find(filter).sort(new BasicDBObject("_id",-1)).first();
             response.put("result", result.toJson().toString());
         }else{
-            response.put("error","invalid relationship");
+            response.put("result","invalid relationship");
+            return response;
         }
 
         }catch(Exception e){
-            response.put("error", e.getMessage());
+            response.put("result", e.getMessage());
             System.out.println(e.getMessage());
         }
         return response;
@@ -142,7 +143,7 @@ public class MonitoringRelationshipService {
         Bson filter = and(eq("monitorID",monitorID),eq("pairCode",pairCode));
         Document result =monitoringRelationshipCollection.find(filter).first();
         if(result==null){
-            System.out.println("Invalid"+monitorID+" : "+pairCode);
+            System.out.println("Invalid "+monitorID+" : "+pairCode);
             return "Invalid";
         }else{
             System.out.println("Valid");
